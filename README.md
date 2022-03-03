@@ -4,7 +4,7 @@
   
 - Object Detection이 이미지가 어디에 있는지 찾아내 bounding box를 그려주고 class까지 분류해준다면  
 - Semantic Segmentation은 위 이미지처럼 이미지의 모든 픽셀의 class를 예측하는 작업이다  
-- 이미지에 같은 class의 여러 object를 분류까지 하는 것은 Instance Segmentation이라고 한다  
+- 이때 이미지에 같은 class의 여러 object를 분류까지 하는 것은 Instance Segmentation이라고 한다  
 
 ## Segmentation의 활용 사례  
 ### 자율 주행  

@@ -1,10 +1,12 @@
 # Segmentation에 관련된 논문 구현  
 ## Segmentation이 무엇인가?  
-<img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">
+<img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">  
+<img src = "https://www.researchgate.net/profile/Andra-Petrovai/publication/329616112/figure/fig2/AS:739657281175556@1553359446925/Panoptic-segmentation-by-unifying-semantic-and-instance-segmentation.ppm">
   
 - Object Detection이 이미지가 어디에 있는지 찾아내 bounding box를 그려주고 class까지 분류해준다면  
 - Semantic Segmentation은 위 이미지처럼 이미지의 모든 픽셀의 class를 예측하는 작업이다  
 - 이때 이미지에 같은 class의 여러 object를 분류까지 하는 것은 Instance Segmentation이라고 한다  
+- 또한 Instance Segmentation과 Semantic Segmentation을 합친 것을 Panoptic Segmentation이라고 한다  
 
 ## Segmentation의 활용 사례  
 ### 자율 주행  

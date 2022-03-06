@@ -13,6 +13,8 @@
 <img src = "https://blogs.nvidia.co.kr/wp-content/uploads/sites/16/2017/02/ces-computer-vision-example-web-398x256.gif">  
 
 - 위 이미지처럼 실시간으로 Segmentation을 수행해 각 class를 구분해 안전하게 자율 주행을 할 수 있도록 도와준다  
+- 자율 주행에서 Segmentation이 어떻게 쓰이는지 보기 위한 동영상 링크는 밑에 걸어두었다  
+- https://www.youtube.com/watch?v=JgXVAio8iA8
 
 ### 의료 이미지  
 <img src = "https://developer-blogs.nvidia.com/wp-content/uploads/2021/09/BRaTS-fig-1.png">  

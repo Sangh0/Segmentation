@@ -152,3 +152,6 @@ class SegNet(nn.Module):
         out = self.decoder13(x)
         
         return out
+    
+if __name__ == "__main__":
+    summary(SegNet(), (3, 720, 960), device='cpu')

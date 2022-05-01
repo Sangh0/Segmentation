@@ -41,3 +41,32 @@ class CamVidDataset(Dataset):
             semantic_map.append(class_map)
         semantic_map = np.stack(semantic_map, axis=-1)
         return np.float32(semantic_map)
+    
+    
+if __name__ == "__main__":
+    path = 'C:/Users/user/MY_DL/segmentation/dataset/camvid_low/'
+    class_path = 'C:/Users/user/MY_DL/segmentation/dataset/camvid_low/11_class_dict.csv'
+    transforms_ = [
+        transforms.ToTensor(),
+    ]
+    batch_size = 12
+    
+    train_loader = DataLoader(
+        CamVidDataset(path=path,
+                      class_path=class_path,
+                      transforms_=transforms_, 
+                      subset='train'),
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=True,
+    )
+    
+    valid_loader = DataLoader(
+        CamVidDataset(path=path,
+                      class_path=class_path,
+                      transforms_=transforms_, 
+                      subset='valid'),
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=True,
+    )

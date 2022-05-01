@@ -25,6 +25,7 @@ class CityscapesDataset(Dataset):
         self.ignore_index = ignore_index
         self.subset = subset
         self.totensor = transforms.Compose([transforms.ToTensor()])
+        self.n_classes = n_classes
 
     def __len__(self):
         return len(self.image_files)
@@ -43,7 +44,7 @@ class CityscapesDataset(Dataset):
             augmented = self.transform_(image=images, mask=labels)
             images = augmented['image']
             labels = augmented['mask']
-        return self.totensor(images), self.totensor(self.one_hot_encoding(labels, n_classes))
+        return self.totensor(images), self.totensor(self.one_hot_encoding(labels, self.n_classes))
 
     def one_hot_encoding(self, labels, n_classes):
         one_hot_ = np.zeros(

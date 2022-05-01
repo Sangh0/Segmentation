@@ -20,7 +20,7 @@ class CityscapesDataset(Dataset):
         if subset not in 'test':
             self.label_files = [
                 file for file in glob(path+'/labels/'+subset+'/**/*.png')
-                if 'gtFine_color' in file
+                if 'gtFine_labelIds' in file
             ]
         self.ignore_index = ignore_index
         self.subset = subset

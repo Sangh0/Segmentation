@@ -15,7 +15,7 @@ class CityscapesDataset(Dataset):
         self,
         path,
         subset,
-        cropsize,
+        cropsize=None,
         ignore_index=255,
     ):
         assert subset in ('train', 'valid', 'test')
@@ -26,11 +26,13 @@ class CityscapesDataset(Dataset):
                 if 'gtFine_labelIds' in file
             ]
         self.subset = subset
+        self.cropsize = cropsize
         self.ignore_index = ignore_index
         self.totensor = transforms.Compose([
             transforms.ToTensor(),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
-        self.trans_train = Compose([
+        self.train_augment = Compose([
             ColorJitter(
                 brightness=0.5,
                 contrast=0.5,
@@ -38,6 +40,9 @@ class CityscapesDataset(Dataset):
             HorizontalFlip(),
             RandomScale((0.75, 1.0, 1.25, 1.5, 1.75, 2.0)),
             RandomCrop(cropsize)
+        ])
+        self.valid_augment = Compose([
+            RandomCrop
         ])
         self.mapping_20 = {
             0: 255, 1: 255, 2: 255, 3: 255, 4: 255, 5: 255, 6: 255, 7: 0, 
@@ -52,13 +57,15 @@ class CityscapesDataset(Dataset):
     
     def __getitem__(self, idx):
         images = Image.open(self.image_files[idx]).convert('RGB')
-        if self.subset not in 'test':
+        if self.subset not in 'test' and self.cropsize is not None:
             labels = Image.open(self.label_files[idx]).convert('L')
             im_lb = dict(im=images, lb=labels)
-            im_lb = self.trans_train(im_lb)
+            im_lb = self.train_augment(im_lb)
             images, labels = im_lb['im'], im_lb['lb']
-        labels = np.array(labels).astype(np.int64)[np.newaxis,:]
-        return self.totensor(images), self.convert_label(labels)
+            labels = np.array(labels).astype(np.int64)[np.newaxis,:]
+            return self.totensor(images), self.convert_label(labels)
+        else:
+            return self.totensor(images)
     
     def convert_label(self, label):
         for k in self.mapping_20:

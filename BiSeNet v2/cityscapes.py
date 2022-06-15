@@ -57,11 +57,15 @@ class CityscapesDataset(Dataset):
     
     def __getitem__(self, idx):
         images = Image.open(self.image_files[idx]).convert('RGB')
-        if self.subset not in 'test' and self.cropsize is not None:
+        if self.subset=='train':
             labels = Image.open(self.label_files[idx]).convert('L')
             im_lb = dict(im=images, lb=labels)
             im_lb = self.train_augment(im_lb)
             images, labels = im_lb['im'], im_lb['lb']
+            labels = np.array(labels).astype(np.int64)[np.newaxis,:]
+            return self.totensor(images), self.convert_label(labels)
+        elif self.subset=='valid':
+            labels = Image.open(self.label_files[idx]).convert('L')
             labels = np.array(labels).astype(np.int64)[np.newaxis,:]
             return self.totensor(images), self.convert_label(labels)
         else:

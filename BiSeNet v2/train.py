@@ -154,8 +154,8 @@ if __name__ == '__main__':
     batch_size = 16
     lr = 5e-2
     EPOCH = 1000
-    width = 512
-    height = 256
+    width = 1024
+    height = 512
 
     from torch.utils.data import DataLoader
     from cityscapes import CityscapesDataset

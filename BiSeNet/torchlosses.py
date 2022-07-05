@@ -3,13 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Define focal loss function (this function was introduced in RetinaNet paper)
-# The loss function of SegNet paper is cross entropy loss 
-# but this function has a problem that called data imabalance
-# so, in this paper, author use an median frequency balancing to solve its problem
-# I think I can solve this problem using focal loss
-# this function is used to weight small objects
-# so I will use focal loss function to train SegNet 
 """
 default values:
     alpha : 0.25 (by RetinaNet paper)
@@ -30,8 +23,8 @@ class FocalLoss(nn.Module):
         focal_loss = (self.alpha * (1-pt)**self.gamma * ce_loss).mean()
 
         return focal_loss
+    
 
-# Define Dice Loss function
 class DiceLoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
         super(DiceLoss, self).__init__()
@@ -47,9 +40,8 @@ class DiceLoss(nn.Module):
         
         loss = 1-(2*intersection+smooth)/(union+smooth)
         return loss
+    
 
-
-# Define OHEM Cross Entorpy Loss function
 class OhemCELoss(nn.Module):
 
     def __init__(self, thresh, ignore_lb=255):

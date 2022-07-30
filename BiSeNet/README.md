@@ -1,6 +1,6 @@
 # BiSeNet 논문 구현  
 ### BiSeNet 논문 링크: https://arxiv.org/abs/1808.00897  
-### [논문 리뷰](https://Sangh0.github.io/Segmentation/BiSeNet_paper.ipynb)
+### [논문 리뷰](https://github.com/Sangh0/Segmentation/blob/main/BiSeNet/BiSeNet_paper.ipynb)
 ### data: Cityscapes and CamVid data set  
 ### BiSeNet Architecture  
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/BiSeNet/figure/figure2.JPG?raw=true">

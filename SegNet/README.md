@@ -1,6 +1,5 @@
 # SegNet 논문 구현  
-## 논문 링크 : https://arxiv.org/abs/1511.00561  
-## data: CamVid data set from kaggle
-data 링크: https://www.kaggle.com/tangsanshi/camvid
+### 논문 링크 : https://arxiv.org/abs/1511.00561  
+### [논문 리뷰](/SegNet_paper.ipynb)
 ### SegNet Architecture  
 <img src = "https://camo.githubusercontent.com/9d9c2862cef299fd7061790651009e996ed03e5ee2048fca56ff1b97a4ec53d3/68747470733a2f2f796f756e6e676773756b2e6769746875622e696f2f6173736574732f7365676e65745f615f646565705f636f6e766f6c7574696f6e616c5f656e636f6465725f6465636f6465725f6172636869746563747572655f666f725f696d6167655f7365676d656e746174696f6e2f6669675f322e706e67">

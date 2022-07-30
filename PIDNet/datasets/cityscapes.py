@@ -30,7 +30,7 @@ path : cityscapes/
 """
 
 """
-Format of label: single channel with one-hot encoding
+Format of label: single channel with integer labels
 """
 
 class CityscapesDataset(Dataset):

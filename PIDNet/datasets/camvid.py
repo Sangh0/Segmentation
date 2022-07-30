@@ -34,7 +34,7 @@ path : cityscapes/
 """
 
 """
-Format of label: 3 RGB channels with segmentation map
+Format of label: 3 RGB channels with color segmentation map
 """
 
 class CamVidDataset(Dataset):

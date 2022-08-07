@@ -2,10 +2,8 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-# We set mIoU score to check accuracy of model
-# this function can use only a type of torch tensor
-class Metrics:
-    def __init__(self, n_classes=12, dim=1, smooth=1e-10):
+class Metrics(object):
+    def __init__(self, n_classes=19, dim=1, smooth=1e-10):
         self.n_classes = n_classes
         self.dim = dim
         self.smooth = smooth

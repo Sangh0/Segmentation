@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from PIL import Image
 from glob import glob
 
@@ -6,31 +7,39 @@ import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
-from ..util.transform import Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter
+from ..util.transform import (
+    Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter,
+)
 
 """
 path : cityscapes/
 ├── images
 │    ├─ train
-│       ├─ image1.jpg
+│       ├─ aachen
+│           ├─ image1.jpg
+│           ├─ ...
 │       ├─ ...
 │    ├─ valid
-│       ├─ image1.jpg 
-│       ├─ ...
+│       ├─ frankfurt
+│           ├─ image1.jpg 
+│           ├─ ...
 │    ├─ test
 │       ├─ image1.jpg 
 │       ├─ ...
 ├── labels
 │    ├─ train
-│       ├─ label1.jpg
-│       ├─ ...
+│       ├─ aachen
+│           ├─ label1.jpg
+│           ├─ ...
 │    ├─ valid
-│       ├─ label1.jpg
-│       ├─ ... 
+│       ├─ frankfurt
+│           ├─ label1.jpg
+│           ├─ ... 
 """
 
 """
 Format of label: single channel with integer labels
+If you have 3 RGB label with segmentation map, go to datasets/camvid.py
 """
 
 class CityscapesDataset(Dataset):
@@ -53,7 +62,7 @@ class CityscapesDataset(Dataset):
         self.ignore_index = ignore_index
         self.totensor = transforms.Compose([
             transforms.ToTensor(),
-#             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
+            transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
         self.augment = Compose([
             HorizontalFlip(),
@@ -69,6 +78,7 @@ class CityscapesDataset(Dataset):
             25: 12, 26: 13, 27: 14, 28: 15, 29: ignore_index, 30: ignore_index, 
             31: 16, 32: 17, 33: 18, -1: ignore_index
         }
+        self.classes = 19
         
     def __len__(self):
         return len(self.image_files)
@@ -81,11 +91,11 @@ class CityscapesDataset(Dataset):
             im_lb = self.augment(im_lb)
             images, labels = im_lb['im'], im_lb['lb']
             labels = np.array(labels)[np.newaxis,:]
-            return self.totensor(images), self.convert_label(labels)
+            return self.totensor(images), self.convert_label(labels), self.get_edge(labels) 
         elif self.subset=='valid':
             labels = Image.open(self.label_files[idx]).convert('L')
             labels = np.array(labels)[np.newaxis,:]
-            return self.totensor(images), self.convert_label(labels)
+            return self.totensor(images), self.convert_label(labels), self.get_edge(labels)
         else:
             return self.totensor(images)
     
@@ -93,3 +103,10 @@ class CityscapesDataset(Dataset):
         for k in self.mapping_20:
             label[label==k] = self.mapping_20[k]
         return torch.LongTensor(label)
+
+    def get_edge(self, label, edge_size=4):
+        edge = cv2.Canny(label.squeeze(), 0.1, 0.2)
+        kernel = np.ones((edge_size, edge_size), np.uint8)
+        edge = (cv2.dilate(edge, kernel, iterations=1) > 50)
+        edge = np.expand_dims(edge, axis=0)
+        return torch.LongTensor(edge)

@@ -1,4 +1,5 @@
 import numpy as np
+import cv2
 from PIL import Image
 from glob import glob
 
@@ -6,10 +7,12 @@ import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 
-from ..util.transform import Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter
+from ..util.transform import (
+    Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter,
+)
 
 """
-path : cityscapes/
+path : camvid/
 ├── train
 │    ├─ train_images
 │       ├─ image1.jpg
@@ -35,6 +38,7 @@ path : cityscapes/
 
 """
 Format of label: 3 RGB channels with color segmentation map
+If you have integer label with segmentation map, go to datasets/cityscapes.py
 """
 
 class CamVidDataset(Dataset):
@@ -63,6 +67,7 @@ class CamVidDataset(Dataset):
                            [192,192,128], [64,64,128], [64,64,0],
                            [128,64,128], [0,0,192], [192,128,128],
                            [128,128,128], [128,128,0]]
+        self.classes = 11
         
     def __len__(self):
         return len(self.image_files)
@@ -85,3 +90,10 @@ class CamVidDataset(Dataset):
         for i, color in enumerate(self.color_list):
             label[(color_map==color).sum(2)==3] = i
         return label
+
+    def get_edge(self, label, edge_size=4):
+        edge = cv2.Canny(label.squeeze(), 0.1, 0.2)
+        kernel = np.ones((edge_size, edge_size), np.uint8)
+        edge = (cv2.dilate(edge, kernel, iterations=1) > 50)
+        edge = np.expand_dims(edge, axis=0)
+        return torch.LongTensor(edge)

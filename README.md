@@ -14,7 +14,7 @@
 <img src = "https://blogs.nvidia.com/wp-content/uploads/2019/10/Screen-Shot-2019-10-23-at-9.38.34-AM.png" width=800>  
 
 ### Medical  
-<img src = "https://ieee-dataport.org/open-access/automatic-segmentation-stroke-lesions-non-contrast-computed-tomography-datasets">  
+<img src = "https://ieee-dataport.org/sites/default/files/Graphical_Abstract_Large.png" width=800>  
 
 
 - source: [image of autonomous driving](https://blogs.nvidia.com), [medical image](https://ieee-dataport.org)

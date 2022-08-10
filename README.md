@@ -2,6 +2,8 @@
 ## What is Segmentation?  
 <img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">  
 
+<img src = "https://www.mdpi.com/electronics/electronics-11-01884/article_deploy/html/images/electronics-11-01884-g001.png">
+
 - Image Segmentation is the task of clustering part.  
 - This process is called pixel-level classification.  
 - There are threee task: Semantic Segmentation, Instance Segmentation, Panoptic Segmentation.  
@@ -17,4 +19,4 @@
 <img src = "https://ieee-dataport.org/sites/default/files/Graphical_Abstract_Large.png" width=800>  
 
 
-- source: [image of autonomous driving](https://blogs.nvidia.com), [medical image](https://ieee-dataport.org)
+- source: [introduction image](https://www.mdpi.com), [image of autonomous driving](https://blogs.nvidia.com), [medical image](https://ieee-dataport.org)

@@ -1,4 +1,4 @@
-# Implementation SegNet
+# SegNet Implementation 
 ### Paper link : https://arxiv.org/abs/1511.00561  
 ### [Paper Review](https://github.com/Sangh0/Segmentation/blob/main/SegNet/SegNet_paper.ipynb)
 ### SegNet Architecture  

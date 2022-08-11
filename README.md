@@ -1,4 +1,4 @@
-# Implement and Review paper related to segmentation
+# Implement and Review paper related to Image Segmentation
 ## What is Segmentation?  
 <img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">  
 

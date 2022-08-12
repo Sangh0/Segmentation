@@ -2,7 +2,7 @@
 ### PIDNET link : https://arxiv.org/abs/2206.02066  
 ### [Paper Review](https://github.com/Sangh0/Segmentation/blob/main/PIDNet/pidnet_paper_review.ipynb)
 ### PIDNet Architecture  
-<img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/figure4.JPG?raw=true">
+<img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/figure4.JPG?raw=true" width=600>
 
 ## Training
 ```
@@ -44,8 +44,8 @@ path = './cityscapes'
 
 dataset = load_cityscapes_dataset(
     path=path,
-    height=config['img_height'],
-    width=config['img_width'],
+    height=config['height'],
+    width=config['width'],
     get_val_set=True,
     batch_size=config['batch_size'],
 )
@@ -60,7 +60,7 @@ pidnet = get_model(
 )
 
 # Check summary of model
-summary(pidnet, (3, config['img_height'], config['img_width']))
+summary(pidnet, (3, config['height'], config['width']))
 
 # Training model
 model = TrainModel(

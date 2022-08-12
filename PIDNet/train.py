@@ -57,7 +57,7 @@ class TrainModel(object):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.ignore_index = ignore_index
 
-    def fit(self, model, train_data, validation_data, epochs):
+    def fit(self, train_data, validation_data):
         total_loss_list, sem_loss_list, bd_loss_list = [], [], []
         pix_acc_list, miou_list = [], []
 
@@ -193,5 +193,3 @@ class TrainModel(object):
             pix_acc/(batch+1),
             miou/(batch+1),
         ]
-
-    

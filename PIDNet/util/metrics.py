@@ -9,7 +9,7 @@ class Metrics(object):
         self.smooth = smooth
 
     def mean_iou(self, pred_mask, label_mask):
-        # pred_mask = torch.argmax(pred_mask, dim=self.dim)
+        pred_mask = torch.argmax(pred_mask, dim=self.dim)
         pred_mask = pred_mask.view(-1)
         # label_mask = torch.argmax(label_mask, dim=self.dim)
         label_mask = label_mask.view(-1)

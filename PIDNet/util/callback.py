@@ -4,12 +4,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-"""
-model check point and early stopping modules
-"""
-# We set check point to save model for getting best validation loss
-# this module is stored when the validation loss decreases for each epoch
-# and, if validation loss does not decrease in the next epoch in training, do not store it 
+
 class CheckPoint(object):
     def __init__(self, verbose=False, trace_func=print):
         self.verbose = verbose
@@ -33,8 +28,6 @@ class CheckPoint(object):
         self.val_loss_min = val_loss
 
 
-# We set early stopping to check over fitting of model
-# this module can be perform above checkpoint with early stopping
 class EarlyStopping(object):
     def __init__(self, patience=7, verbose=False, delta=0, path='es_checkpoint.pt', trace_func=print):
         self.patience = patience

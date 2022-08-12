@@ -218,7 +218,7 @@ class PIDNet(nn.Module):
             return out
         
 
-def get_model(model_name, num_classes, inference_phase=False):
+def get_model(model_name: str, num_classes: int, inference_phase: bool=False):
     assert model_name in ('pidnet_s', 'pidnet_m', 'pidnet_l'), \
         f'{model_name} does not exist, you have to select between pidnet_s, pidnet_m and pidnet_l'
     

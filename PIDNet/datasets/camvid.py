@@ -82,7 +82,7 @@ class CamVidDataset(Dataset):
             images, labels = im_lb['im'], im_lb['lb']
         labels = np.array(labels)[np.newaxis,:]
             
-        return self.totensor(images), torch.LongTensor(labels)
+        return self.totensor(images), torch.LongTensor(labels), self.get_edge(labels)
             
     def color2label(self, color_map):
         color_map = np.array(color_map)

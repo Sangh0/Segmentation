@@ -44,34 +44,34 @@ path = './cityscapes'
 
 dataset = load_cityscapes_dataset(
     path=path,
-    height=config.img_height,
-    width=config.img_width,
+    height=config['img_height'],
+    width=config['img_width'],
     get_val_set=True,
-    batch_size=config.batch_size,
+    batch_size=config['batch_size'],
 )
 
 train_loader, valid_loader = dataset['train_set'], dataset['valid_set']
 
 # Load PIDNet
 pidnet = get_model(
-    model_name=config.model_name, 
-    num_classes=config.num_classes,
+    model_name=config['model_name'], 
+    num_classes=config['num_classes'],
     inference_phase=False,
 )
 
 # Check summary of model
-summary(pidnet, (3, config.img_height, config.img_width))
+summary(pidnet, (3, config['img_height'], config['img_width']))
 
 # Training model
 model = TrainModel(
     model=pidnet,
-    lr=config.lr,
-    epochs=config.epochs,
-    weight_decay=config.weight_decay,
-    num_classes=config.num_classes,
-    lr_scheduling=aconfigrgs.lr_scheduling,
-    check_point=config.check_point,
-    early_stop=config.early_stop,
+    lr=config['lr'],
+    epochs=config['epochs'],
+    weight_decay=config['weight_decay'],
+    num_classes=config['num_classes'],
+    lr_scheduling=aconfigrgs['lr_scheduling'],
+    check_point=config['check_point'],
+    early_stop=config['early_stop'],
 )
 
 history = model.fit(train_loader, valid_loader)

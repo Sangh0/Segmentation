@@ -1,13 +1,14 @@
+import os
+import sys
 import argparse
-from ast import parse
 
 import torch
 from torch.utils.data import DataLoader
 from torchsummary import summary
 
-from .models.pidnet import get_model
-from .train import TrainModel
-from .datasets.cityscapes import CityscapesDataset
+from models.pidnet import get_model
+from train import TrainModel
+from datasets.cityscapes import CityscapesDataset
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Training PIDNet', add_help=False)
@@ -64,7 +65,7 @@ def main(args):
         inference_phase=False,
     )
 
-    summary(model)
+    summary(model, (3, args.img_height, args.img_width))
 
     model = TrainModel(
         model=model,

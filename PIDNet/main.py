@@ -3,12 +3,11 @@ import sys
 import argparse
 
 import torch
-from torch.utils.data import DataLoader
 from torchsummary import summary
 
 from models.pidnet import get_model
 from train import TrainModel
-from datasets.cityscapes import CityscapesDataset
+from datasets.cityscapes import load_cityscapes_dataset
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Training PIDNet', add_help=False)
@@ -45,30 +44,26 @@ def main(args):
     height = args.img_height
     batch_size = args.batch_size
 
-    train_loader = DataLoader(
-        CityscapesDataset(path=path, subset='train', cropsize=(width,height)),
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=True,
+    dataset = load_cityscapes_dataset(
+        path=path,
+        height=args.img_height,
+        width=args.img_width,
+        get_val_set=True,
+        batch_size=args.batch_size,
     )
 
-    valid_loader = DataLoader(
-        CityscapesDataset(path=path, subset='valid', cropsize=(width,height)),
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=True,
-    )
+    train_loader, valid_loader = dataset['train_set'], dataset['valid_set']
 
-    model = get_model(
+    pidnet = get_model(
         model_name=args.model_name, 
         num_classes=args.num_classes,
         inference_phase=False,
     )
 
-    summary(model, (3, args.img_height, args.img_width))
+    summary(pidnet, (3, args.img_height, args.img_width))
 
     model = TrainModel(
-        model=model,
+        model=pidnet,
         lr=args.lr,
         epochs=args.epochs,
         weight_decay=args.weight_decay,

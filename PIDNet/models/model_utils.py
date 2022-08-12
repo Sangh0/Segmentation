@@ -334,6 +334,9 @@ class Pag(nn.Module):
         with_channel=False,
     ):
         super(Pag, self).__init__()
+        self.after_relu = after_relu
+        self.with_channel = with_channel
+
         self.f_x = nn.Sequential(
             nn.Conv2d(in_dim, mid_dim, kernel_size=1, stride=1, padding=0, bias=False),
             nn.BatchNorm2d(mid_dim),
@@ -348,8 +351,7 @@ class Pag(nn.Module):
                 nn.BatchNorm2d(in_dim),
             )
         if after_relu:
-            self.relu = nn.ReLU(inplace=True)
-            
+            self.relu = nn.ReLU(inplace=True)            
 
     def forward(self, x, y):
         size = x.size()

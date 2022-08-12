@@ -5,11 +5,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-from .util.losses import OhemCELoss, BoundaryLoss
-from .util.scheduler import PolynomialLRDecay
-from .util.metrics import Metrics
-from .util.callback import EarlyStopping, CheckPoint
-from .combination import Combination
+from util.losses import OhemCELoss, BoundaryLoss
+from util.scheduler import PolynomialLRDecay
+from util.metrics import Metrics
+from util.callback import EarlyStopping, CheckPoint
+from combination import Combination
 
 
 class TrainModel(object):
@@ -28,13 +28,15 @@ class TrainModel(object):
     ):
         assert (check_point==True and early_stop==False) or (check_point==False and early_stop==True), \
             'Choose between Early Stopping and Check Point'
+        
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.combination = Combination(
-            model=model,
-            sem_loss=OhemCELoss(),
-            bd_loss=BoundaryLoss(),
+            model=model.to(self.device),
+            sem_loss=OhemCELoss().to(self.device),
+            bd_loss=BoundaryLoss().to(self.device),
             metrics=Metrics(n_classes=num_classes, dim=1),
-            ignore_index=self.ignore_index,
+            ignore_index=ignore_index,
         )
 
         self.epochs = epochs
@@ -54,7 +56,6 @@ class TrainModel(object):
         self.early_stop = early_stop
         self.es = EarlyStopping(patience=50, verbose=True, path='./weights/early_stop.pt')
         
-        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.ignore_index = ignore_index
 
     def fit(self, train_data, validation_data):
@@ -63,7 +64,7 @@ class TrainModel(object):
 
         val_total_loss_list, val_sem_loss_list, val_bd_loss_list = [], [], []
         val_pix_acc_list, val_miou_list = [], []
-        
+
         print('Start Model Training...!')
         start_training = time.time()
         for epoch in range(self.epochs):
@@ -149,6 +150,7 @@ class TrainModel(object):
                 del outputs
                 torch.cuda.empty_cache()
 
+
             return [
                 total_loss/(batch+1),
                 bd_loss/(batch+1),
@@ -156,7 +158,6 @@ class TrainModel(object):
                 pix_acc/(batch+1),
                 miou/(batch+1),
             ]
-
     
     def train_on_batch(self, train_data):
         total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
@@ -171,15 +172,15 @@ class TrainModel(object):
             
             outputs = self.combination(images, labels, edges)
 
-            loss = outputs['total_loss']
+            loss = outputs['total_loss'].mean()
 
             loss.backward()
             self.optimizer.step()
 
             total_loss += loss.item()
-            bd_loss += outputs['boundary_loss'].item()
-            sem_loss += outputs['semantic_loss'].item()
-            pix_acc += outputs['pixel_accuracy'].item()
+            bd_loss += outputs['boundary_loss'].mean().item()
+            sem_loss += outputs['semantic_loss'].mean().item()
+            pix_acc += outputs['pixel_accuracy'].mean().item()
             miou += outputs['mean_iou'].item()
 
             del images; del labels; del edges

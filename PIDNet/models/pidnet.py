@@ -213,7 +213,7 @@ class PIDNet(nn.Module):
         if self.cal_auxiliary:
             extra_p = self.seghead_p(aux_p)
             extra_d = self.seghead_d(aux_d)
-            return extra_p, out, extra_d
+            return [extra_p, out, extra_d]
         else:
             return out
         

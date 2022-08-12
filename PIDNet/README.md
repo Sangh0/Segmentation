@@ -5,12 +5,12 @@
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/figure4.JPG?raw=true">
 
 ## Training
-'''
+```
 usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]
                [--batch_size BATCH_SIZE] [--weight_decay WEIGHT_DECAY] --num_classes NUM_CLASSES        
                [--lr_scheduling LR_SCHEDULING] [--check_point CHECK_POINT] [--early_stop EARLY_STOP]    
                [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH]
-'''
+```
 
 
 

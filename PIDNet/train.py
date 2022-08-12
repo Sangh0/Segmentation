@@ -31,7 +31,7 @@ class TrainModel(object):
         
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        self.combination = Combination(
+        self.combi = Combination(
             model=model.to(self.device),
             sem_loss=OhemCELoss().to(self.device),
             bd_loss=BoundaryLoss().to(self.device),
@@ -101,10 +101,10 @@ class TrainModel(object):
 
             if self.check_point:
                 path = f'check_point_{epoch+1}.pt'
-                self.cp(val_total_loss, self.combination.model, path)
+                self.cp(val_total_loss, self.combi.model, path)
             
             if self.early_stop:
-                self.es(val_total_loss, self.combination.model)
+                self.es(val_total_loss, self.combi.model)
                 if self.es.early_stop:
                     print('\n##########################\n'
                           '##### Early Stopping #####\n'
@@ -112,7 +112,7 @@ class TrainModel(object):
                     break
 
         return {
-            'model': self.combination.model,
+            'model': self.combi.model,
             'training_log': {
                 'loss': total_loss_list,
                 'semantic_loss': sem_loss_list,
@@ -130,7 +130,7 @@ class TrainModel(object):
         }
 
     def validate_on_batch(self, validation_data):
-        self.model.eval()
+        self.combi.model.eval()
         with torch.no_grad():
             total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
             for batch, (images, labels, edges) in enumerate(validation_data):
@@ -138,7 +138,7 @@ class TrainModel(object):
                 labels = labels.to(self.device)
                 edges = edges.to(self.device)
 
-                outputs = self.combination(images, labels, edges)
+                outputs = self.combi(images, labels, edges)
 
                 total_loss += outputs['total_loss'].item()
                 bd_loss += outputs['boundary_loss'].item()
@@ -162,7 +162,7 @@ class TrainModel(object):
     def train_on_batch(self, train_data):
         total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
         for batch, (images, labels, edges) in enumerate(train_data):
-            self.combination.train()
+            self.combi.model.train()
             
             images = images.to(self.device)
             labels = labels.to(self.device)
@@ -170,7 +170,7 @@ class TrainModel(object):
             
             self.optimizer.zero_grad()
             
-            outputs = self.combination(images, labels, edges)
+            outputs = self.combi(images, labels, edges)
 
             loss = outputs['total_loss'].mean()
 

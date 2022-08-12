@@ -4,7 +4,7 @@ from PIL import Image
 from glob import glob
 
 import torch
-from torch.utils.data import Dataset
+from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 
 from ..util.transform import (
@@ -110,3 +110,32 @@ class CityscapesDataset(Dataset):
         edge = (cv2.dilate(edge, kernel, iterations=1) > 50)
         edge = np.expand_dims(edge, axis=0)
         return torch.LongTensor(edge)
+
+
+def load_cityscapes_dataset(
+    path: str, 
+    height: int=1024,
+    width: int=1024,
+    get_val_set: bool=True, 
+    batch_size: int=12,
+):
+    out = {
+        'train_set': DataLoader(
+            CityscapesDataset(path=path, subset='train', cropsize=(width,height)),
+            batch_size=batch_size,
+            shuffle=True,
+            drop_last=True,
+        )
+    }
+
+    if get_val_set:
+        out['valid_set'] = {
+            DataLoader(
+                CityscapesDataset(path=path, subset='valid', cropsize=(width,height)),
+                batch_size=batch_size,
+                shuffle=True,
+                drop_last=True,
+            )
+        }
+
+    return out

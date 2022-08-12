@@ -31,15 +31,10 @@ class Metrics(object):
 
         return np.nanmean(iou_per_class)
 
-    def f1_score(self, pred_mask, label_mask):
-        pred_mask = F.sigmoid(pred_mask)
-
-        pred_mask = pred_mask.view(-1)
-        label_mask = label_mask.view(-1)
-
-        intersection = (pred_mask*label_mask).sum()
-        union = pred_mask.sum() + label_mask.sum()
-
-        f1_score = 2.0 * (intersection+self.smooth) / (union+self.smooth)
-
-        return f1_score
+    def pixel_acc(self, pred, label):
+        _, preds = torch.max(pred, dim=self.dim)
+        valid = (label >= 0).long()
+        acc_sum = torch.sum(valid * (preds == label).long())
+        pixel_sum = torch.sum(valid)
+        acc = acc_sum.float() / (pixel_sum.float() + 1e-10)
+        return acc

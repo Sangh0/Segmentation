@@ -5,7 +5,9 @@
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/BiSeNetV2/figure/figure3.JPG?raw=true" width=700>
 
 ## Results
-
+ 
+<img src = "https://github.com/Sangh0/Segmentation/blob/main/BiSeNetV2/images/output2.png?raw=true" width=800>
+<img src = "https://github.com/Sangh0/Segmentation/blob/main/BiSeNetV2/images/output3.png?raw=true" width=800>
 
 
 ## Training

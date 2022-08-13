@@ -1,9 +1,11 @@
 import time
+from tqdm.auto import tqdm
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 
 from util.losses import OhemCELoss, BoundaryLoss
 from util.scheduler import PolynomialLRDecay
@@ -41,7 +43,7 @@ class TrainModel(object):
 
         self.epochs = epochs
         self.optimizer = optim.SGD(
-            model.parameters(), 
+            self.combi.model.parameters(), 
             lr=lr,
             momentum=0.9,
             weight_decay=weight_decay,
@@ -58,49 +60,44 @@ class TrainModel(object):
         
         self.ignore_index = ignore_index
 
-    def fit(self, train_data, validation_data):
-        total_loss_list, sem_loss_list, bd_loss_list = [], [], []
-        pix_acc_list, miou_list = [], []
+        self.writer = SummaryWriter()
 
-        val_total_loss_list, val_sem_loss_list, val_bd_loss_list = [], [], []
-        val_pix_acc_list, val_miou_list = [], []
+    def fit(self, train_data, validation_data):
 
         print('Start Model Training...!')
         start_training = time.time()
-        for epoch in range(self.epochs):
+        pbar = tqdm(range(self.epochs), total=int(self.epochs), )
+        for epoch in tqdm(range(self.epochs)):
             init_time = time.time()
 
-            total_loss, bd_loss, sem_loss, pix_acc, miou = self.train_on_batch(train_data)
-            total_loss_list.append(total_loss)
-            sem_loss_list.append(sem_loss)
-            bd_loss_list.append(bd_loss)
-            pix_acc_list.append(pix_acc)
-            miou_list.append(miou)
+            total_loss, bd_loss, sem_loss, pix_acc, miou = \
+                self.train_on_batch(train_data, epoch)
 
-            val_total_loss, val_bd_loss, val_sem_loss, val_pix_acc, val_miou = self.validate_on_batch(validation_data)
-            val_total_loss_list.append(total_loss)
-            val_sem_loss_list.append(sem_loss)
-            val_bd_loss_list.append(bd_loss)
-            val_pix_acc_list.append(pix_acc)
-            val_miou_list.append(miou)
+            val_total_loss, val_bd_loss, val_sem_loss, val_pix_acc, val_miou = \
+                self.validate_on_batch(validation_data, epoch)
 
             end_time = time.time()
 
-            print(f'\n[Epoch {epoch+1}/{self.epochs}]'
-                  f'  [time: {end_time-init_time:.2f}s]'
-                  f'  [lr = {self.optimizer.param_groups[0]["lr"]}]')
-            print(f'\n[train total loss: {total_loss:.3f}]'
-                  f'  [train semantic loss: {sem_loss:.3f}]'
-                  f'  [train boundary loss: {bd_loss:.3f}]')
-            print(f'\n[valid total loss: {val_total_loss:.3f}]'
-                  f'  [valid semantic loss: {val_sem_loss:.3f}]'
-                  f'  [valid boundary loss: {val_bd_loss:.3f}]')
+            print(f'\n{"="*45} Epoch {epoch+1}/{self.epochs} {"="*45}\n'
+                  f'time: {end_time-init_time:.2f}s'
+                  f'  lr = {self.optimizer.param_groups[0]["lr"]}')
+            print(f'\ntrain average total loss: {total_loss:.3f}'
+                  f'   semantic loss: {sem_loss:.3f}'
+                  f'   boundary loss: {bd_loss:.3f}'
+                  f'\ntrain average pixel accuracy: {pix_acc:.3f}'
+                  f'   mean IOU: {miou:.3f}')
+            print(f'\nvalid average total loss: {val_total_loss:.3f}'
+                  f'   semantic loss: {val_sem_loss:.3f}'
+                  f'   boundary loss: {val_bd_loss:.3f}'
+                  f'\nvalid average pixel accuracy: {val_pix_acc:.3f}'
+                  f'   mean IOU: {val_miou:.3f}')
+            print(f'\n{"="*103}')
 
             if self.lr_scheduling:
                 self.lr_scheduler.step()
 
             if self.check_point:
-                path = f'check_point_{epoch+1}.pt'
+                path = f'./weights/check_point_{epoch+1}.pt'
                 self.cp(val_total_loss, self.combi.model, path)
             
             if self.early_stop:
@@ -109,57 +106,70 @@ class TrainModel(object):
                     print('\n##########################\n'
                           '##### Early Stopping #####\n'
                           '##########################')
+                    self.writer.close()
                     break
+        
+        end_training = time.time()
+        print(f'\nTotal time for training is {end_training-start_training:.2f}s')
 
         return {
             'model': self.combi.model,
-            'training_log': {
-                'loss': total_loss_list,
-                'semantic_loss': sem_loss_list,
-                'boundary_loss': bd_loss_list,
-                'pixel_accuracy': pix_acc_list,
-                'mean_iou': miou_list,
-            },
-            'validating_log': {
-                'loss': val_total_loss_list,
-                'semantic_loss': val_sem_loss_list,
-                'boundary_loss': val_bd_loss_list,
-                'pixel_accuracy': val_pix_acc_list,
-                'mean_iou': val_miou_list,
-            }
         }
-
-    def validate_on_batch(self, validation_data):
-        self.combi.model.eval()
-        with torch.no_grad():
-            total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
-            for batch, (images, labels, edges) in enumerate(validation_data):
-                images = images.to(self.device)
-                labels = labels.to(self.device)
-                edges = edges.to(self.device)
-
-                outputs = self.combi(images, labels, edges)
-
-                total_loss += outputs['total_loss'].item()
-                bd_loss += outputs['boundary_loss'].item()
-                sem_loss += outputs['semantic_loss'].item()
-                pix_acc += outputs['pixel_accuracy'].item()
-                miou += outputs['mean_iou'].item()
-
-                del images; del labels; del edges
-                del outputs
-                torch.cuda.empty_cache()
-
-
-            return [
-                total_loss/(batch+1),
-                bd_loss/(batch+1),
-                sem_loss/(batch+1),
-                pix_acc/(batch+1),
-                miou/(batch+1),
-            ]
     
-    def train_on_batch(self, train_data):
+    @torch.no_grad()
+    def validate_on_batch(self, validation_data, epoch):
+        self.combi.model.eval()
+        total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
+        for batch, (images, labels, edges) in enumerate(validation_data):
+            images = images.to(self.device)
+            labels = labels.to(self.device)
+            edges = edges.to(self.device)
+
+            outputs = self.combi(images, labels, edges)
+
+            loss = outputs['total_loss'].mean()
+            boundary_loss = outputs['boundary_loss'].mean().item()
+            semantic_loss = outputs['semantic_loss'].mean().item()
+            pixel_accuracy = outputs['pixel_accuracy'].mean().item()
+            mean_iou = outputs['mean_iou'].item()
+
+            total_loss += loss.item()
+            bd_loss += boundary_loss
+            sem_loss += semantic_loss
+            pix_acc += pixel_accuracy
+            miou += mean_iou
+            
+            if batch == 0:
+                print(f'\n{" "*20} Validate Step {" "*20}')
+            
+            if (batch+1) % 10 == 0:
+                print(f'\n[Batch {batch+1}/{len(validation_data)}]'
+                      f'\ntotal loss: {loss:.3f}'
+                      f'  boundary loss: {boundary_loss:.3f}'
+                      f'  semantic loss: {semantic_loss:.3f}'
+                      f'\npixel accuracy: {pixel_accuracy:.3f}'
+                      f'  mean IOU: {mean_iou:.3f}')
+
+            steps = epoch * len(validation_data) + batch
+            self.writer.add_scalar('Valid/Total Loss', loss, steps)
+            self.writer.add_scalar('Valid/Semantic Loss', semantic_loss, steps)
+            self.writer.add_scalar('Valid/Boundary Loss', boundary_loss, steps)
+            self.writer.add_scalar('Valid/Pixel Accuracy', pixel_accuracy, steps)
+            self.writer.add_scalar('Valid/Mean IOU', mean_iou, steps)
+
+            del images; del labels; del edges
+            del outputs
+            torch.cuda.empty_cache()
+
+        return [
+            total_loss/(batch+1),
+            bd_loss/(batch+1),
+            sem_loss/(batch+1),
+            pix_acc/(batch+1),
+            miou/(batch+1),
+        ]
+    
+    def train_on_batch(self, train_data, epoch):
         total_loss, bd_loss, sem_loss, pix_acc, miou = 0, 0, 0, 0, 0
         for batch, (images, labels, edges) in enumerate(train_data):
             self.combi.model.train()
@@ -173,15 +183,37 @@ class TrainModel(object):
             outputs = self.combi(images, labels, edges)
 
             loss = outputs['total_loss'].mean()
+            boundary_loss = outputs['boundary_loss'].mean().item()
+            semantic_loss = outputs['semantic_loss'].mean().item()
+            pixel_accuracy = outputs['pixel_accuracy'].mean().item()
+            mean_iou = outputs['mean_iou'].item()
 
             loss.backward()
             self.optimizer.step()
 
             total_loss += loss.item()
-            bd_loss += outputs['boundary_loss'].mean().item()
-            sem_loss += outputs['semantic_loss'].mean().item()
-            pix_acc += outputs['pixel_accuracy'].mean().item()
-            miou += outputs['mean_iou'].item()
+            bd_loss += boundary_loss
+            sem_loss += semantic_loss
+            pix_acc += pixel_accuracy
+            miou += mean_iou
+
+            if batch == 0:
+                print(f'\n{" "*20} Training Step {" "*20}')
+
+            if (batch+1) % 20 == 0:                   
+                print(f'\n[Batch {batch+1}/{len(train_data)}]'
+                      f'\ntotal loss: {loss:.3f}'
+                      f'  boundary loss: {boundary_loss:.3f}'
+                      f'  semantic loss: {semantic_loss:.3f}'
+                      f'\npixel accuracy: {pixel_accuracy:.3f}'
+                      f'  mean IOU: {mean_iou:.3f}')
+
+            steps = epoch * len(train_data) + batch
+            self.writer.add_scalar('Train/Total Loss', loss, steps)
+            self.writer.add_scalar('Train/Semantic Loss', semantic_loss, steps)
+            self.writer.add_scalar('Train/Boundary Loss', boundary_loss, steps)
+            self.writer.add_scalar('Train/Pixel Accuracy', pixel_accuracy, steps)
+            self.writer.add_scalar('Train/Mean IOU', mean_iou, steps)
 
             del images; del labels; del edges
             del outputs

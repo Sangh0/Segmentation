@@ -25,7 +25,7 @@ from train import TrainModel
 from datasets.cityscapes import load_cityscapes_dataset
 
 # Set hyperparameters
-config = {
+Config = {
     'lr': 1e-2,
     'weight_decay': 5e-4,
     'batch_size': 12,
@@ -44,34 +44,34 @@ path = './cityscapes'
 
 dataset = load_cityscapes_dataset(
     path=path,
-    height=config['height'],
-    width=config['width'],
+    height=Config['height'],
+    width=Config['width'],
     get_val_set=True,
-    batch_size=config['batch_size'],
+    batch_size=Config['batch_size'],
 )
 
 train_loader, valid_loader = dataset['train_set'], dataset['valid_set']
 
 # Load PIDNet
 pidnet = get_model(
-    model_name=config['model_name'], 
-    num_classes=config['num_classes'],
+    model_name=Config['model_name'], 
+    num_classes=Config['num_classes'],
     inference_phase=False,
 )
 
 # Check summary of model
-summary(pidnet, (3, config['height'], config['width']))
+summary(pidnet, (3, Config['height'], Config['width']))
 
 # Training model
 model = TrainModel(
     model=pidnet,
-    lr=config['lr'],
-    epochs=config['epochs'],
-    weight_decay=config['weight_decay'],
-    num_classes=config['num_classes'],
-    lr_scheduling=aconfigrgs['lr_scheduling'],
-    check_point=config['check_point'],
-    early_stop=config['early_stop'],
+    lr=Config['lr'],
+    epochs=Config['epochs'],
+    weight_decay=Config['weight_decay'],
+    num_classes=Config['num_classes'],
+    lr_scheduling=Config['lr_scheduling'],
+    check_point=Config['check_point'],
+    early_stop=Config['early_stop'],
 )
 
 history = model.fit(train_loader, valid_loader)

@@ -7,7 +7,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 
-from ..util.transform import (
+from util.transform import (
     Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter,
 )
 
@@ -129,13 +129,11 @@ def load_cityscapes_dataset(
     }
 
     if get_val_set:
-        out['valid_set'] = {
-            DataLoader(
-                CityscapesDataset(path=path, subset='valid', cropsize=(width,height)),
-                batch_size=batch_size,
-                shuffle=True,
-                drop_last=True,
-            )
-        }
+        out['valid_set'] = DataLoader(
+            CityscapesDataset(path=path, subset='valid', cropsize=(width,height)),
+            batch_size=batch_size,
+            shuffle=True,
+            drop_last=True,
+        )
 
     return out

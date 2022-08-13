@@ -8,17 +8,24 @@ class Metrics(object):
         self.dim = dim
         self.smooth = smooth
 
-    def mean_iou(self, pred_mask, label_mask):
-        pred_mask = torch.argmax(pred_mask, dim=self.dim)
-        pred_mask = pred_mask.view(-1)
-        # label_mask = torch.argmax(label_mask, dim=self.dim)
-        label_mask = label_mask.view(-1)
+    def mean_iou(self, pred, label):
+        if len(pred.shape) == 4 and pred.size(1) != 1:
+            pred = torch.argmax(pred, dim=self.dim)
+        elif pred.size(1) == 1:
+            pred = pred.squeeze(dim=self.dim)
+        if len(label.shape) == 4 and label.size(1) != 1:
+            label = torch.argmax(label, dim=self.dim)
+        elif label.size(1) == 1:
+            label = label.squeeze(dim=self.dim)
+
+        pred = pred.contiguous().view(-1)
+        label = label.contiguous().view(-1)
 
         iou_per_class = []
 
         for clas in range(self.n_classes):
-            true_class = pred_mask == clas
-            true_label = label_mask == clas
+            true_class = pred == clas
+            true_label = label == clas
 
             if true_label.long().sum().item() == 0:
                 iou_per_class.append(np.nan)
@@ -32,9 +39,21 @@ class Metrics(object):
         return np.nanmean(iou_per_class)
 
     def pixel_acc(self, pred, label):
-        _, preds = torch.max(pred, dim=self.dim)
-        valid = (label >= 0).long()
-        acc_sum = torch.sum(valid * (preds == label).long())
-        pixel_sum = torch.sum(valid)
-        acc = acc_sum.float() / (pixel_sum.float() + 1e-10)
-        return acc
+        if len(pred.shape) == 4 and pred.size(1) != 1:
+            pred = torch.argmax(pred, dim=self.dim)
+        elif pred.size(1) == 1:
+            pred = pred.squeeze(dim=self.dim)
+        if len(label.shape) == 4 and label.size(1) != 1:
+            label = torch.argmax(label, dim=self.dim)
+        elif label.size(1) == 1:
+            label = label.squeeze(dim=self.dim)
+
+        pred = pred.contiguous().view(-1)
+        label = label.contiguous().view(-1)
+
+        intersection = torch.sum(pred==label)
+        difference = torch.sum(pred!=label)
+
+        union = intersection + difference * 2 + self.smooth
+
+        return intersection/union

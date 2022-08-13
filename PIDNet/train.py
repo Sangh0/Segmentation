@@ -78,6 +78,8 @@ class TrainModel(object):
 
             end_time = time.time()
 
+            self.writer.add_scalar('lr', self.optimizer.param_groups[0]["lr"], epoch)
+
             print(f'\n{"="*45} Epoch {epoch+1}/{self.epochs} {"="*45}\n'
                   f'time: {end_time-init_time:.2f}s'
                   f'  lr = {self.optimizer.param_groups[0]["lr"]}')

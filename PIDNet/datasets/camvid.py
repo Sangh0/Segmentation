@@ -99,7 +99,7 @@ class CamVidDataset(Dataset):
         return torch.LongTensor(edge)
 
 
-def load_cityscapes_dataset(
+def load_camvid_dataset(
     path: str, 
     height: int=720,
     width: int=960,
@@ -107,18 +107,20 @@ def load_cityscapes_dataset(
     batch_size: int=12,
 ):
     out = {
-        'train': DataLoader(
+        'train_set': DataLoader(
             CamVidDataset(path=path, subset='train', cropsize=(width,height)),
-            batch_size=batch_size,
-            shuffle=True,
-            drop_last=True,
-        ),
-
-        'valid': DataLoader(
-            CamVidDataset(path=path, subset='valid', cropsize=(width,height)),
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
         )
     }
+
+    if get_val_set:
+        out['valid_set'] = DataLoader(
+            CamVidDataset(path=path, subset='valid', cropsize=(width,height)),
+            batch_size=batch_size,
+            shuffle=True,
+            drop_last=True,
+        )
+    
     return out

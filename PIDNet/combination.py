@@ -39,7 +39,7 @@ class Combination(nn.Module):
                     mode='bilinear',
                     align_corners=False,
                 )
-                
+
         pix_acc = self.cal_pixel_acc(outputs[1], labels)
         mean_iou = self.cal_mean_iou(outputs[1], labels)
         semantic_loss = self.sem_loss(outputs[:2], labels.squeeze(dim=1))

@@ -66,8 +66,8 @@ class TrainModel(object):
 
         print('Start Model Training...!')
         start_training = time.time()
-        pbar = tqdm(range(self.epochs), total=int(self.epochs), )
-        for epoch in tqdm(range(self.epochs)):
+        pbar = tqdm(range(self.epochs), total=int(self.epochs))
+        for epoch in pbar:
             init_time = time.time()
 
             total_loss, bd_loss, sem_loss, pix_acc, miou = \

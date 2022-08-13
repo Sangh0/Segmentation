@@ -23,7 +23,7 @@ class CheckPoint(object):
 
     def save_checkpoint(self, val_loss, model, path):
         if self.verbose:
-            self.trace_func(f'Validation loss decreased ({self.val_loss_min:.3f} --> {val_loss:.3f}).  Saving model ...')
+            self.trace_func(f'\nValidation loss decreased ({self.val_loss_min:.3f} --> {val_loss:.3f}).  Saving model ...')
         torch.save(model.state_dict(), path)
         self.val_loss_min = val_loss
 
@@ -47,7 +47,7 @@ class EarlyStopping(object):
             self.save_model(val_loss, model)
         elif score < self.best_score + self.delta:
             self.counter += 1
-            self.trace_func(f'EarlyStopping counter: {self.counter} out of {self.patience}')
+            self.trace_func(f'\nEarlyStopping counter: {self.counter} out of {self.patience}')
             if self.counter >= self.patience:
                 self.early_stop = True
         else:
@@ -58,6 +58,6 @@ class EarlyStopping(object):
     def save_model(self, val_loss, model):
         '''Saves model when validation loss decrease.'''
         if self.verbose:
-            self.trace_func(f'Validation loss decreased ({self.val_loss_min:.3f} --> {val_loss:.3f}).  Saving model ...')
+            self.trace_func(f'\nValidation loss decreased ({self.val_loss_min:.3f} --> {val_loss:.3f}).  Saving model ...')
         torch.save(model.state_dict(), self.path)
         self.val_loss_min = val_loss

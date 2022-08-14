@@ -15,7 +15,21 @@ from combination import Combination
 
 
 class TrainModel(object):
-
+    """
+        param:
+            - model: Model for training
+            - lr: learning rate
+            - epochs: max epochs
+            - weight_decay: l2 penalty
+            - num_classes: total number of class in dataset
+            - t_threshold: threshold value for l3 function
+            - loss_weights: weight values for entire loss function
+                            From the left of the list, its lambda0, labmda1, labmda2 and lambda4
+            - lr_scheduling: apply learning rate scheduler
+            - check_point: save the weight with best score during training
+            - early_stop: apply early stopping to avoid over-fitting
+            - ignore_index: ignore index of dataset
+    """
     def __init__(
         self,
         model,
@@ -30,22 +44,7 @@ class TrainModel(object):
         early_stop=False,
         ignore_index=255,
     ):
-        """
-        param:
-            - model: Model for training
-            - lr: learning rate
-            - epochs: max epochs
-            - weight_decay: l2 penalty
-            - num_classes: total number of class in dataset
-            - t_threshold: threshold value for l3 function
-            - loss_weights: weight values for entire loss function
-                            From the left of the list, its lambda0, labmda1, labmda2 and lambda4
-            - lr_scheduling: apply learning rate scheduler
-            - check_point: save the weight with best score during training
-            - early_stop: apply early stopping to avoid over-fitting
-            - ignore_index: ignore index of dataset
-        """
-        
+    
         assert (check_point==True and early_stop==False) or (check_point==False and early_stop==True), \
             'Choose between Early Stopping and Check Point'
         

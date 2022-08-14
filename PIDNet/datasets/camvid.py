@@ -103,7 +103,7 @@ def load_camvid_dataset(
     path: str, 
     height: int=720,
     width: int=960,
-    get_val_set: bool=True, 
+    get_val_set: bool=False, 
     get_test_set: bool=False,
     batch_size: int=12,
 ):
@@ -125,11 +125,13 @@ def load_camvid_dataset(
         )
     
     if get_test_set:
-        out['test_set'] = DataLoader(
-            CamVidDataset(path=path, subset='test'),
-            batch_size=1,
-            shuffle=True,
-            drop_last=False,
-        )
+        del out
+        out = {DataLoader(
+                CamVidDataset(path=path, subset='test'),
+                batch_size=1,
+                shuffle=False,
+                drop_last=False,
+            )
+        }
 
     return out

@@ -138,11 +138,14 @@ def load_cityscapes_dataset(
         )
     
     if get_test_set:
-        out['test_set'] = DataLoader(
-            CityscapesDataset(path=path, subset='test'),
-            batch_size=1,
-            shuffle=True,
-            drop_last=False,
-        )
+        del out
+        out = {
+            'test_set': DataLoader(
+                CityscapesDataset(path=path, subset='test'),
+                batch_size=1,
+                shuffle=False,
+                drop_last=False,
+            )
+        }
 
     return out

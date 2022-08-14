@@ -5,55 +5,31 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class CrossEntropyLoss(nn.Module):
-    
-    def __init__(
-        self, 
-        ignore_index=255, 
-        weight=None,
-        balance_weights=[0.5, 0.5],
-        sb_weights=0.5,
-    ):
-        super(CrossEntropyLoss, self).__init__()
-        self.ignore_index = ignore_index
-        self.criterion = nn.CrossEntropyLoss(
-            weight=weight,
-            ignore_index=ignore_index,
-        )
-        self.balance_weights = balance_weights
-        self.sb_weights = sb_weights
-
-    def _forward(self, score, target):
-        loss = self.criterion(score, target)
-        return loss
-
-    def forward(self, score, target):
-
-        if len(score) == 1:
-            score = [score]
-            
-        if len(self.balance_weights) == len(score):
-            return sum([w * self._forward(x, target) for (w, x) in zip(self.balance_weights, score)])
-        elif len(score) == 1:
-            return self.sb_weights * self._forward(score[0], target)
-        
-        else:
-            raise ValueError("lengths of prediction and target are not identical!")
-        
-
 class OhemCELoss(nn.Module):
     
     def __init__(
         self, 
         ignore_index=255, 
-        thres=0.7,
+        thresh=0.7,
         min_kept=100000, 
         weight=None,
-        balance_weights=[0.5, 0.5],
-        sb_weights=0.5,
+        balance_weights=[0.4, 1],
+        sb_weights=1,
     ):
+        """
+        Calculate the parts of l0 and l2 in entire loss function, 
+        where l0 and l2 correspond to the outputs of P Branch and I Branch, respectively.
+        
+        # param
+            - ignore_index: ignore label in dataset
+            - thresh: threshold value for performing OHEM in backpropagation
+            - min_kept: minimum value to perform threshold in ohem function
+            - weight: weight of CELoss
+            - balance_weights: list of lambda0 and lambda2 of loss function in paper (lambda0=0.4, lambda1=1)
+            - sb_weights: weight value to avoid 1 input from entering
+        """
         super(OhemCELoss, self).__init__()
-        self.thresh = thres
+        self.thresh = thresh
         self.min_kept = max(1, min_kept)
         self.ignore_index = ignore_index
         self.criterion = nn.CrossEntropyLoss(
@@ -103,9 +79,16 @@ class OhemCELoss(nn.Module):
             raise ValueError("lengths of prediction and target are not identical!")
         
 
+
 class BoundaryLoss(nn.Module):
-    
-    def __init__(self, coeff_bce=20.):
+    def __init__(self, coeff_bce=20):
+        """
+        Calculate the part of l1 in entire loss function.
+        This function is performed for boundary detection.
+        
+        # param
+            - coeff_bce: lambda 1 in form (2) from pidnet paper
+        """
         super(BoundaryLoss, self).__init__()
         self.coeff_bce = coeff_bce
 
@@ -124,7 +107,12 @@ class BoundaryLoss(nn.Module):
         weight[pos_index] = neg_num * 1.0 / sum_num
         weight[neg_index] = pos_num * 1.0 / sum_num
 
-        loss = F.binary_cross_entropy_with_logits(score, target, weight, reduction='mean')
+        loss = F.binary_cross_entropy_with_logits(
+            input=score, 
+            target=target, 
+            weight=weight, 
+            reduction='mean',
+        )
 
         return loss
 

@@ -81,14 +81,14 @@ class OhemCELoss(nn.Module):
 
 
 class BoundaryLoss(nn.Module):
-    def __init__(self, coeff_bce=20):
-        """
-        Calculate the part of l1 in entire loss function.
-        This function is performed for boundary detection.
+    """
+    Calculate the part of l1 in entire loss function.
+    This function is performed for boundary detection.
         
-            # param
-                - coeff_bce: lambda 1 in form (2) from pidnet paper
-        """
+        # param
+            - coeff_bce: lambda 1 in form (2) from pidnet paper
+    """
+    def __init__(self, coeff_bce=20):
         super(BoundaryLoss, self).__init__()
         self.coeff_bce = coeff_bce
 

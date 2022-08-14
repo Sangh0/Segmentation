@@ -7,7 +7,7 @@ import torch.nn.functional as F
 
 class OhemCELoss(nn.Module):
     """
-    Calculate the parts of l0 and l2 in entire loss function, 
+    Calculate the parts of l0, l2 and l3 in entire loss function, 
     where l0 and l2 correspond to the outputs of P Branch and I Branch, respectively.
         
         # param
@@ -86,8 +86,8 @@ class BoundaryLoss(nn.Module):
         Calculate the part of l1 in entire loss function.
         This function is performed for boundary detection.
         
-        # param
-            - coeff_bce: lambda 1 in form (2) from pidnet paper
+            # param
+                - coeff_bce: lambda 1 in form (2) from pidnet paper
         """
         super(BoundaryLoss, self).__init__()
         self.coeff_bce = coeff_bce

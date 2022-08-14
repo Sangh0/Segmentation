@@ -23,11 +23,29 @@ class TrainModel(object):
         epochs,
         weight_decay,
         num_classes,
+        t_threshold=0.8,
+        loss_weights=[0.4, 20, 1, 1],
         lr_scheduling=False,
         check_point=False,
         early_stop=False,
         ignore_index=255,
     ):
+        """
+        param:
+            - model: Model for training
+            - lr: learning rate
+            - epochs: max epochs
+            - weight_decay: l2 penalty
+            - num_classes: total number of class in dataset
+            - t_threshold: threshold value for l3 function
+            - loss_weights: weight values for entire loss function
+                            From the left of the list, its lambda0, labmda1, labmda2 and lambda4
+            - lr_scheduling: apply learning rate scheduler
+            - check_point: save the weight with best score during training
+            - early_stop: apply early stopping to avoid over-fitting
+            - ignore_index: ignore index of dataset
+        """
+        
         assert (check_point==True and early_stop==False) or (check_point==False and early_stop==True), \
             'Choose between Early Stopping and Check Point'
         
@@ -35,9 +53,10 @@ class TrainModel(object):
 
         self.combi = Combination(
             model=model.to(self.device),
-            sem_loss=OhemCELoss().to(self.device),
-            bd_loss=BoundaryLoss().to(self.device),
+            sem_loss=OhemCELoss(balance_weights=[loss_weights[0], loss_weights[2]]).to(self.device),
+            bd_loss=BoundaryLoss(coeff_bce=loss_weights[1]).to(self.device),
             metrics=Metrics(n_classes=num_classes, dim=1),
+            t_threshold=t_threshold,
             ignore_index=ignore_index,
         )
 
@@ -48,7 +67,7 @@ class TrainModel(object):
             momentum=0.9,
             weight_decay=weight_decay,
         )
-        
+
         self.lr_scheduling = lr_scheduling
         self.lr_scheduler = PolynomialLRDecay(self.optimizer, max_decay_steps=self.epochs)
 

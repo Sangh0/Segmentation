@@ -1,6 +1,6 @@
+import random
 from PIL import Image
 import PIL.ImageEnhance as ImageEnhance
-import random
 
 
 class RandomCrop(object):
@@ -23,9 +23,9 @@ class RandomCrop(object):
         sw, sh = random.random() * (w - W), random.random() * (h - H)
         crop = int(sw), int(sh), int(sw) + W, int(sh) + H
         return dict(
-                im = im.crop(crop),
-                lb = lb.crop(crop)
-                    )
+            im = im.crop(crop),
+            lb = lb.crop(crop)
+        )
 
 
 class HorizontalFlip(object):
@@ -38,9 +38,10 @@ class HorizontalFlip(object):
         else:
             im = im_lb['im']
             lb = im_lb['lb']
-            return dict(im = im.transpose(Image.FLIP_LEFT_RIGHT),
-                        lb = lb.transpose(Image.FLIP_LEFT_RIGHT),
-                    )
+            return dict(
+                im = im.transpose(Image.FLIP_LEFT_RIGHT),
+                lb = lb.transpose(Image.FLIP_LEFT_RIGHT),
+            )
 
 
 class RandomScale(object):
@@ -53,44 +54,10 @@ class RandomScale(object):
         W, H = im.size
         scale = random.choice(self.scales)
         w, h = int(W * scale), int(H * scale)
-        return dict(im = im.resize((w, h), Image.BILINEAR),
-                    lb = lb.resize((w, h), Image.NEAREST),
-                )
-
-
-class ColorJitter(object):
-    def __init__(self, brightness=None, contrast=None, saturation=None, *args, **kwargs):
-        if not brightness is None and brightness>0:
-            self.brightness = [max(1-brightness, 0), 1+brightness]
-        if not contrast is None and contrast>0:
-            self.contrast = [max(1-contrast, 0), 1+contrast]
-        if not saturation is None and saturation>0:
-            self.saturation = [max(1-saturation, 0), 1+saturation]
-
-    def __call__(self, im_lb):
-        im = im_lb['im']
-        lb = im_lb['lb']
-        r_brightness = random.uniform(self.brightness[0], self.brightness[1])
-        r_contrast = random.uniform(self.contrast[0], self.contrast[1])
-        r_saturation = random.uniform(self.saturation[0], self.saturation[1])
-        im = ImageEnhance.Brightness(im).enhance(r_brightness)
-        im = ImageEnhance.Contrast(im).enhance(r_contrast)
-        im = ImageEnhance.Color(im).enhance(r_saturation)
-        return dict(im = im,
-                    lb = lb,
-                )
-
-
-class MultiScale(object):
-    def __init__(self, scales):
-        self.scales = scales
-
-    def __call__(self, img):
-        W, H = img.size
-        sizes = [(int(W*ratio), int(H*ratio)) for ratio in self.scales]
-        imgs = []
-        [imgs.append(img.resize(size, Image.BILINEAR)) for size in sizes]
-        return imgs
+        return dict(
+            im = im.resize((w, h), Image.BILINEAR),
+            lb = lb.resize((w, h), Image.NEAREST),
+        )
 
 
 class Compose(object):

@@ -10,12 +10,14 @@ class Combination(nn.Module):
         sem_loss,
         bd_loss,
         metrics,
-        ignore_index=255, 
+        t_threshold=0.8,
+        ignore_index=255,
     ):
         super(Combination, self).__init__()
         self.model = model
         self.sem_loss = sem_loss
         self.bd_loss = bd_loss
+        self.t_threshold = t_threshold
         self.ignore_index = ignore_index
         self.metrics = metrics
         
@@ -42,12 +44,17 @@ class Combination(nn.Module):
 
         pix_acc = self.cal_pixel_acc(outputs[1], labels)
         mean_iou = self.cal_mean_iou(outputs[1], labels)
+
+        # calculate l0 and l2
         semantic_loss = self.sem_loss(outputs[:2], labels.squeeze(dim=1))
+        # calculate l1
         boundary_loss = self.bd_loss(outputs[2], edges.float())
-        
+        # calculate l3
         filler = torch.ones_like(labels.squeeze(dim=1)) * self.ignore_index
-        bd_labels = torch.where(torch.sigmoid(outputs[2][:,0,:,:])>0.8, labels.squeeze(dim=1), filler)
+        bd_labels = torch.where(torch.sigmoid(outputs[2][:,0,:,:]) > self.t_threshold, labels.squeeze(dim=1), filler)
         sb_loss = self.sem_loss(outputs[1], bd_labels)
+
+        # Loss = l0 + l1 + l2 + l3
         total_loss = semantic_loss + boundary_loss + sb_loss
         
         return {

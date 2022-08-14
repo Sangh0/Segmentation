@@ -1,5 +1,5 @@
 import os
-import sys
+import ast
 import argparse
 
 import torch
@@ -8,6 +8,12 @@ from torchsummary import summary
 from models.pidnet import get_model
 from train import TrainModel
 from datasets.cityscapes import load_cityscapes_dataset
+
+def arg_as_list(param):
+    arg = ast.literal_eval(param)
+    if type(arg) is not list:
+        raise argparse.ArgumentTypeError('Argument \ "%s\" is not a list'%(arg))
+    return arg
 
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Training PIDNet', add_help=False)
@@ -25,6 +31,10 @@ def get_args_parser():
                         help='weight decay of optimizer SGD')
     parser.add_argument('--num_classes', default=19, type=int, required=True,
                         help='class number of dataset')
+    parser.add_argument('--loss_weights', default=[0.4, 20, 1, 1], type=arg_as_list,
+                        help='weight of each loss functions, length: 4')
+    parser.add_argument('--t_threshold', default=0.8, type=float,
+                        help='threshold value for l3 function')
     parser.add_argument('--lr_scheduling', default=True, type=bool,
                         help='apply learning rate scheduler')
     parser.add_argument('--check_point', default=True, type=bool,
@@ -38,14 +48,9 @@ def get_args_parser():
     return parser
 
 def main(args):
-    path = args.data_dir
-
-    width = args.img_width
-    height = args.img_height
-    batch_size = args.batch_size
 
     dataset = load_cityscapes_dataset(
-        path=path,
+        path=args.data_dir,
         height=args.img_height,
         width=args.img_width,
         get_val_set=True,
@@ -60,7 +65,7 @@ def main(args):
         inference_phase=False,
     )
 
-    summary(pidnet, (3, args.img_height, args.img_width))
+    summary(pidnet, (3, args.img_height, args.img_width), device='cpu')
 
     model = TrainModel(
         model=pidnet,
@@ -68,6 +73,8 @@ def main(args):
         epochs=args.epochs,
         weight_decay=args.weight_decay,
         num_classes=args.num_classes,
+        t_threshold=args.t_threshold,
+        loss_weights=args.loss_weights,
         lr_scheduling=args.lr_scheduling,
         check_point=args.check_point,
         early_stop=args.early_stop,

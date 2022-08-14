@@ -8,7 +8,7 @@ from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 
 from util.transform import (
-    Compose, RandomCrop, HorizontalFlip, RandomScale, ColorJitter,
+    Compose, RandomCrop, HorizontalFlip, RandomScale,
 )
 
 """

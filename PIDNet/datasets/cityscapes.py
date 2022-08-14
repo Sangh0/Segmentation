@@ -116,7 +116,8 @@ def load_cityscapes_dataset(
     path: str, 
     height: int=1024,
     width: int=1024,
-    get_val_set: bool=True, 
+    get_val_set: bool=True,
+    get_test_set: bool=False, 
     batch_size: int=12,
 ):
     out = {
@@ -134,6 +135,14 @@ def load_cityscapes_dataset(
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
+        )
+    
+    if get_test_set:
+        out['test_set'] = DataLoader(
+            CityscapesDataset(path=path, subset='test'),
+            batch_size=1,
+            shuffle=True,
+            drop_last=False,
         )
 
     return out

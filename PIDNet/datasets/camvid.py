@@ -104,6 +104,7 @@ def load_camvid_dataset(
     height: int=720,
     width: int=960,
     get_val_set: bool=True, 
+    get_test_set: bool=False,
     batch_size: int=12,
 ):
     out = {
@@ -123,4 +124,12 @@ def load_camvid_dataset(
             drop_last=True,
         )
     
+    if get_test_set:
+        out['test_set'] = DataLoader(
+            CamVidDataset(path=path, subset='test'),
+            batch_size=1,
+            shuffle=True,
+            drop_last=False,
+        )
+
     return out

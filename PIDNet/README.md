@@ -8,7 +8,9 @@
 ```
 usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]
                [--batch_size BATCH_SIZE] [--weight_decay WEIGHT_DECAY] [--num_classes NUM_CLASSES]
-               [--loss_weights LOSS_WEIGHTS] [--t_threshold T_THRESHOLD] [--lr_scheduling LR_SCHEDULING] [--check_point CHECK_POINT] [--early_stop EARLY_STOP] [--img_height IMG_HEIGHT] [--img_width IMG_WIDTH]
+               [--loss_weights LOSS_WEIGHTS] [--t_threshold T_THRESHOLD] [--lr_scheduling LR_SCHEDULING] 
+               [--check_point CHECK_POINT] [--early_stop EARLY_STOP] [--img_height IMG_HEIGHT] 
+               [--img_width IMG_WIDTH]
 ```
 
 ## Run On Jupyter Notebook

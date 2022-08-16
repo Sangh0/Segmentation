@@ -64,11 +64,15 @@ class CityscapesDataset(Dataset):
             transforms.ToTensor(),
             transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225)),
         ])
-        self.augment = Compose([
+
+        augment_options = [
             HorizontalFlip(),
             RandomScale((0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0)),
-            RandomCrop(cropsize)
-        ])
+        ]
+        if self.cropsize is not None:
+            augment_options.append(RandomCrop(self.cropsize))
+        self.augment = Compose(augment_options)
+
         self.mapping_20 = {
             0: ignore_index, 1: ignore_index, 2: ignore_index, 3: ignore_index, 
             4: ignore_index, 5: ignore_index, 6: ignore_index, 7: 0, 8: 1, 
@@ -87,9 +91,10 @@ class CityscapesDataset(Dataset):
         images = Image.open(self.image_files[idx]).convert('RGB')
         if self.subset=='train':
             labels = Image.open(self.label_files[idx]).convert('L')
-            im_lb = dict(im=images, lb=labels)
-            im_lb = self.augment(im_lb)
-            images, labels = im_lb['im'], im_lb['lb']
+            if self.cropsize is not None:
+                im_lb = dict(im=images, lb=labels)
+                im_lb = self.augment(im_lb)
+                images, labels = im_lb['im'], im_lb['lb']
             labels = np.array(labels)[np.newaxis,:]
             return self.totensor(images), self.convert_label(labels), self.get_edge(labels) 
         elif self.subset=='valid':
@@ -131,7 +136,7 @@ def load_cityscapes_dataset(
 
     if get_val_set:
         out['valid_set'] = DataLoader(
-            CityscapesDataset(path=path, subset='valid', cropsize=(width,height)),
+            CityscapesDataset(path=path, subset='valid', cropsize=None),
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
@@ -141,7 +146,7 @@ def load_cityscapes_dataset(
         del out
         out = {
             'test_set': DataLoader(
-                CityscapesDataset(path=path, subset='test'),
+                CityscapesDataset(path=path, subset='test', cropsize=None),
                 batch_size=1,
                 shuffle=False,
                 drop_last=False,

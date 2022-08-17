@@ -19,7 +19,7 @@ def get_args_parser():
     parser = argparse.ArgumentParser(description='Training PIDNet', add_help=False)
     parser.add_argument('--data_dir', type=str, required=True,
                         help='directory where your dataset is located')
-    parser.add_argument('--model_name', default='pidnet_s', type=str, required=True,
+    parser.add_argument('--model_name', type=str, required=True,
                         help='Name of PIDNet model, select between pidnet_s, pidnet_m and pidnet_l')
     parser.add_argument('--lr', default=1e-2, type=float,
                         help='learning rate')
@@ -29,7 +29,7 @@ def get_args_parser():
                         help='Batch Size for training model')
     parser.add_argument('--weight_decay', default=5e-4, type=float,
                         help='weight decay of optimizer SGD')
-    parser.add_argument('--num_classes', default=19, type=int, required=True,
+    parser.add_argument('--num_classes', type=int, required=True,
                         help='class number of dataset')
     parser.add_argument('--loss_weights', default=[0.4, 20, 1, 1], type=arg_as_list,
                         help='weight of each loss functions, length: 4')

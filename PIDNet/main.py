@@ -45,6 +45,9 @@ def get_args_parser():
                         help='height size of image')
     parser.add_argument('--img_width', default=1024, type=int,
                         help='width size of image')
+    parser.add_argument('--device', type=str, 
+                        default='cuda' if torch.cuda.is_available() else 'cpu',
+                        help='set device for faster model training')
     return parser
 
 def main(args):

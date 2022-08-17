@@ -14,7 +14,13 @@ usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [-
                [--img_width IMG_WIDTH]
 ```
 
-## Run On Jupyter Notebook
+## Evaluate
+```
+usage: evaluate.py [-h] [--data_dir DATA_DIR] [--weight WEIGHT] [--dataset DATASET] 
+                        [--model_name MODEL_NAME] [--num_classes NUM_CLASSES]
+```
+
+## Run on Jupyter Notebook for training model
 ```python
 # Load Packages
 from torchsummary import summary
@@ -78,4 +84,71 @@ model = TrainModel(
 )
 
 history = model.fit(train_loader, valid_loader)
+```
+
+## Run on Jupyter Notebook to evaluate model with each dataset
+```python
+import time
+import argparse
+import numpy as np
+import matplotlib.pyplot as plt
+from tqdm.auto import tqdm
+
+import torch
+import torch.nn.functional as F
+
+from util.metrics import Metrics
+from models.pidnet import get_model
+from datasets.cityscapes import load_cityscapes_dataset
+
+cal_miou = Metrics(n_classes=args.num_classes, dim=1)
+
+# Set parameters
+Config = {
+    'data_dir': './cityscapes'
+    'weight': './pidnet/weights/best.pt'
+    'dataset': 'select dataset between train, valid and test'
+    'model_name': 'pidnet_s',
+    'num_classes': 19,
+    'device': 'cuda' if torch.cuda.is_available() else 'cpu'
+}
+
+# Load Datasets
+if Config['dataset']=='train':
+    dataset = load_cityscapes_dataset(
+        path=Config['data_dir'],
+        get_val_set=False,
+        batch_size=1,
+    )
+    data_loader = dataset['train_set']
+
+elif Config['dataset']=='valid':
+    dataset = load_cityscapes_dataset(
+        path=Config['data_dir'],
+        get_val_set=True,
+        batch_size=1,
+    )
+    data_loader = dataset['valid_set']
+    
+else:
+    dataset = load_cityscapes_dataset(
+        path=Config['data_dir'],
+        get_test_set=True,
+        batch_size=1,
+    )
+    data_loader = dataset['test_set']
+
+# Load PIDNet
+pidnet = get_model(
+    model_name=Config['model_name'], 
+    num_classes=Config['num_classes'],
+    inference_phase=False,
+)
+
+evaluate(
+    model=pidnet,
+    dataset=data_loader,
+    device=Config['device'],
+    cal_miou=cal_miou,
+)
 ```

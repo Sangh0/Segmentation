@@ -14,8 +14,7 @@ from datasets.cityscapes import load_cityscapes_dataset
 
 @torch.no_grad()
 def evaluate(
-    model, 
-    weight, 
+    model,
     dataset, 
     device, 
     cal_miou

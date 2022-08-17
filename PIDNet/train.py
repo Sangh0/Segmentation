@@ -16,33 +16,33 @@ from combination import Combination
 
 class TrainModel(object):
     """
-        param:
-            - model: Model for training
-            - lr: learning rate
-            - epochs: max epochs
-            - weight_decay: l2 penalty
-            - num_classes: total number of class in dataset
-            - t_threshold: threshold value for l3 function
-            - loss_weights: weight values for entire loss function
-                            From the left of the list, its lambda0, labmda1, labmda2 and lambda3
-            - lr_scheduling: apply learning rate scheduler
-            - check_point: save the weight with best score during training
-            - early_stop: apply early stopping to avoid over-fitting
-            - ignore_index: ignore index of dataset
+    Args:
+        - model: Model for training
+        - lr: learning rate
+        - epochs: max epochs
+        - weight_decay: l2 penalty
+        - num_classes: total number of class in dataset
+        - t_threshold: threshold value for l3 function
+        - loss_weights: weight values for entire loss function
+                        From the left of the list, its lambda0, labmda1, labmda2 and lambda3
+        - lr_scheduling: apply learning rate scheduler
+        - check_point: save the weight with best score during training
+        - early_stop: apply early stopping to avoid over-fitting
+        - ignore_index: ignore index of dataset
     """
     def __init__(
         self,
-        model,
-        lr,
-        epochs,
-        weight_decay,
-        num_classes,
-        t_threshold=0.8,
-        loss_weights=[0.4, 20, 1, 1],
-        lr_scheduling=False,
-        check_point=False,
-        early_stop=False,
-        ignore_index=255,
+        model: nn.Module,
+        lr: float,
+        epochs: int,
+        weight_decay: float,
+        num_classes: int,
+        t_threshold: float=0.8,
+        loss_weights: list=[0.4, 20, 1, 1],
+        lr_scheduling: bool=False,
+        check_point: bool=False,
+        early_stop: bool=False,
+        ignore_index: int=255,
     ):
     
         assert (check_point==True and early_stop==False) or (check_point==False and early_stop==True), \

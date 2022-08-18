@@ -5,7 +5,7 @@
 ### PIDNet Architecture  
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/figure4.JPG?raw=true" width=600>
 
-## Training
+## Train
 ```
 usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]
                [--batch_size BATCH_SIZE] [--weight_decay WEIGHT_DECAY] [--num_classes NUM_CLASSES]
@@ -88,18 +88,13 @@ history = model.fit(train_loader, valid_loader)
 
 ## Run on Jupyter Notebook to evaluate model with each dataset
 ```python
-import time
-import argparse
-import numpy as np
-import matplotlib.pyplot as plt
-from tqdm.auto import tqdm
-
 import torch
 import torch.nn.functional as F
 
 from util.metrics import Metrics
 from models.pidnet import get_model
 from datasets.cityscapes import load_cityscapes_dataset
+from evaluate import evaluate
 
 cal_miou = Metrics(n_classes=args.num_classes, dim=1)
 
@@ -144,7 +139,9 @@ pidnet = get_model(
     num_classes=Config['num_classes'],
     inference_phase=False,
 )
+pidnet.load_state_dict(torch.load(Config['weight']))
 
+# Evaluate PIDNet
 evaluate(
     model=pidnet,
     dataset=data_loader,

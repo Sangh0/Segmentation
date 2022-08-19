@@ -9,13 +9,13 @@ class Metrics(object):
         self.smooth = smooth
 
     def mean_iou(self, pred, label):
-        if len(pred.shape) == 4 and pred.size(1) != 1:
+        if len(pred.shape) == 4 or pred.shape[1] != 1:
             pred = torch.argmax(pred, dim=self.dim)
-        elif pred.size(1) == 1:
+        elif len(pred.shape) == 3:
             pred = pred.squeeze(dim=self.dim)
-        if len(label.shape) == 4 and label.size(1) != 1:
+        if len(label.shape) == 4 or label.shape[1] != 1:
             label = torch.argmax(label, dim=self.dim)
-        elif label.size(1) == 1:
+        elif len(label.shape) == 3:
             label = label.squeeze(dim=self.dim)
 
         pred = pred.contiguous().view(-1)
@@ -39,13 +39,13 @@ class Metrics(object):
         return np.nanmean(iou_per_class)
 
     def pixel_acc(self, pred, label):
-        if len(pred.shape) == 4 and pred.size(1) != 1:
+        if len(pred.shape) == 4 or pred.shape[1] != 1:
             pred = torch.argmax(pred, dim=self.dim)
-        elif pred.size(1) == 1:
+        elif len(pred.shape) == 3:
             pred = pred.squeeze(dim=self.dim)
-        if len(label.shape) == 4 and label.size(1) != 1:
+        if len(label.shape) == 4 or label.shape[1] != 1:
             label = torch.argmax(label, dim=self.dim)
-        elif label.size(1) == 1:
+        elif len(label.shape) == 3:
             label = label.squeeze(dim=self.dim)
 
         pred = pred.contiguous().view(-1)

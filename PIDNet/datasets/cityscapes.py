@@ -147,7 +147,7 @@ def load_cityscapes_dataset(
         out = {
             'test_set': DataLoader(
                 CityscapesDataset(path=path, subset='test', cropsize=None),
-                batch_size=1,
+                batch_size=batch_size,
                 shuffle=False,
                 drop_last=False,
             )

@@ -143,7 +143,6 @@ def main(args):
 
     evaluate(
         model=pidnet,
-        weight=args.weight,
         dataset=data_loader,
         device=args.device,
         metric=metric.mean_iou,

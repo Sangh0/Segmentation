@@ -58,6 +58,23 @@ class RandomScale(object):
             im = im.resize((w, h), Image.BILINEAR),
             lb = lb.resize((w, h), Image.NEAREST),
         )
+        
+
+class UnNormalize(object):
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, tensor):
+        """
+        Args:
+            tensor (Tensor): Tensor image of size (C, H, W) to be normalized.
+        Returns:
+            Tensor: Normalized image.
+        """
+        for t, m, s in zip(tensor, self.mean, self.std):
+            t.mul_(s).add_(m)
+        return tensor
 
 
 class Compose(object):

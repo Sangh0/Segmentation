@@ -89,24 +89,24 @@ history = model.fit(train_loader, valid_loader)
 ## Run on Jupyter Notebook to evaluate model with each dataset
 ```python
 import torch
-import torch.nn.functional as F
 
 from util.metrics import Metrics
 from models.pidnet import get_model
 from datasets.cityscapes import load_cityscapes_dataset
 from evaluate import evaluate
 
-cal_miou = Metrics(n_classes=args.num_classes, dim=1)
 
 # Set parameters
 Config = {
-    'data_dir': './cityscapes'
-    'weight': './pidnet/weights/best.pt'
-    'dataset': 'select dataset between train, valid and test'
+    'data_dir': './cityscapes',
+    'weight': './pidnet/weights/best.pt',
+    'dataset': 'select dataset between train, valid and test',
     'model_name': 'pidnet_s',
     'num_classes': 19,
-    'device': 'cuda' if torch.cuda.is_available() else 'cpu'
+    'device': torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 }
+
+metric = Metrics(n_classes=Config['num_classes'], dim=1)
 
 # Load Datasets
 if Config['dataset']=='train':
@@ -143,9 +143,32 @@ pidnet.load_state_dict(torch.load(Config['weight']))
 
 # Evaluate PIDNet
 evaluate(
-    model=pidnet,
+    model=pidnet, 
     dataset=data_loader,
     device=Config['device'],
-    cal_miou=cal_miou,
+    metric=metric.mean_iou,
 )
+```
+
+## Visualize outputs on Jupyter Notebook
+```python
+from evaluate import VisualizeOnNotebook
+
+# if using train or valid set
+visual = VisualizeCityscapesOnNotebook(
+    images=images,
+    outputs=outputs,
+    labels=labels,
+)
+
+visual.visualize(number, 'name of dataset')
+
+# if using test set
+visual = VisualizeCityscapesOnNotebook(
+    images=images,
+    outputs=outputs,
+    labels=None,
+)
+
+visual.visualize(number, 'test')
 ```

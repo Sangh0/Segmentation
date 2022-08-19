@@ -10,38 +10,54 @@ import torch.nn.functional as F
 from util.metrics import Metrics
 from models.pidnet import get_model
 from datasets.cityscapes import load_cityscapes_dataset
+from util.transform import UnNormalize
 
 
-@torch.no_grad()
+@torch.no_grad
 def evaluate(
     model,
     dataset, 
     device, 
-    cal_miou
+    metric,
 ):
     start = time.time()
+    model = model.to(device)
     model.eval()
     image_list, label_list, output_list = [], [], []
     batch_miou = 0
-    for batch, (images, labels, _) in tqdm(dataset):
-        images, labels = images.to(device), labels.to(device)
-        
+    pbar = tqdm(dataset, total=len(dataset))
+    for batch, dset in enumerate(pbar):
+        if len(dset) == 3:
+            images, labels = dset[0], dset[1]
+            images, labels = images.to(device), labels.to(device)
+            
+        elif len(dset) == 1:
+            images, labels = dset[0], None
+            images = images.to(device)
+
+        else:
+            raise ValueError('Dataset not found')
+            
+        if batch == 100:
+            break
+
         _, outputs, _ = model(images)
         
-        if labels.size(2) != outputs.size(2) or labels.size(3) != outputs.size(3):
+        if images.size(2) != outputs.size(2) or images.size(3) != outputs.size(3):
             outputs = F.interpolate(
                 outputs,
-                size=(labels.size(2), labels.size(3)),
+                size=(images.size(2), images.size(3)),
                 mode='bilinear',
                 align_corners=False,
             )
-            
-        mean_iou = cal_miou(outputs, labels)
-        batch_miou += mean_iou.item()
         
-        image_list.append(images)
-        label_list.append(labels)
-        output_list.append(outputs)
+        if len(dset) == 3:
+            mean_iou = metric(outputs, labels)
+            batch_miou += mean_iou.item()
+        
+        image_list.append(images.detach().cpu())
+        label_list.append(labels.detach().cpu() if labels is not None else None)
+        output_list.append(outputs.detach().cpu())
         
         del images; del labels; del outputs
         torch.cuda.empty_cache()
@@ -49,66 +65,20 @@ def evaluate(
     end = time.time()
     
     print(f'Inference Time: {end-start:.3f}s')
-    print(f'Mean IOU : {mean_iou/(batch+1)}')
+
+    if len(dset) == 3:
+        print(f'Meawn IOU: {batch_miou/(batch+1)}')
+        return {
+            'images': torch.cat(image_list, dim=0),
+            'labels': torch.cat(label_list, dim=0),
+            'outputs': torch.cat(output_list, dim=0),
+        }
     
-    return {
-        'images': torch.cat(image_list, dim=0),
-        'labels': torch.cat(label_list, dim=0),
-        'outputs': torch.cat(output_list, dim=0),
-    }
-
-
-def segmap2image(segmaps):
-    labels_info = {
-        0: [128,64,128],    # road
-        1: [244, 35, 232],  # sidewalk
-        2: [70, 70, 70],    # building
-        3: [102, 102, 156], # wall
-        4: [190, 153, 153], # fence
-        5: [153, 153, 153], # pole
-        6: [250, 170, 30],  # traffic light
-        7: [220, 220, 0],   # traffic sign
-        8: [107, 142, 35],  # vegetation
-        9: [152, 251, 152], # terrain
-        10: [70, 130, 180], # sky
-        11: [220, 20, 60],  # person
-        12: [255, 0, 0],    # rider
-        13: [0, 0, 142],    # car
-        14: [0, 0, 70],     # truck
-        15: [0, 60, 100],   # bus
-        16: [0, 80, 100],   # train
-        17: [0, 0, 230],    # motorcycle
-        18: [119, 11, 32]   # bicycle
-    }
-
-    B, C, H, W = segmaps.size()
-    map2image = np.zeros(shape=(B, H, W, 3), dtyupe=np.int32)
-    for i in tqdm(range(B)):
-        for j in range(H):
-            for k in range(W):
-                map2image[i,:,j,k] = labels_info[segmaps[i,j,k]]
-
-    del segmaps
-    return map2image
-
-
-def run_on_notebook(images, labels, outputs, num):
-    for i in range(num):
-        plt.figure(figsize=(25, 8))
-        plt.subplot(131)
-        plt.imshow(images[i])
-        plt.title('Original Image')
-        plt.axis('off')
-        plt.subplot(132)
-        plt.imshow(labels[i])
-        plt.title('Label Image')
-        plt.axis('off')
-        plt.subplot(133)
-        plt.imshow(images[i])
-        plt.imshow(outputs[i], alpha=0.5)
-        plt.title('Predicted Image')
-        plt.axis('off')
-        plt.show()
+    else:
+        return {
+            'images': torch.cat(image_list, dim=0),
+            'outputs': torch.cat(output_list, dim=0),
+        }
 
 
 def get_args_parser():
@@ -129,7 +99,7 @@ def get_args_parser():
     return parser
 
 def main(args):
-    cal_miou = Metrics(n_classes=args.num_classes, dim=1)
+    metric = Metrics(n_classes=args.num_classes, dim=1)
 
     device = args.device
     
@@ -176,7 +146,7 @@ def main(args):
         weight=args.weight,
         dataset=data_loader,
         device=args.device,
-        cal_miou=cal_miou,
+        metric=metric.mean_iou,
     )
 
 if __name__ == '__main__':

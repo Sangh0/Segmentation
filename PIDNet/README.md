@@ -5,6 +5,13 @@
 ### PIDNet Architecture  
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/figure4.JPG?raw=true" width=600>
 
+## Output of PIDNet in test set
+- first sample
+<img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/output/test_output1.png?raw=true" width=600>
+
+- second sample
+<img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/output/test_output2.png?raw=true" width=600>
+
 ## Train
 ```
 usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]

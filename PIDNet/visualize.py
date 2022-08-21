@@ -9,6 +9,13 @@ from util.metrics import Metrics
 
 class VisualizeOnNotebook(object):
 
+    """
+    Args:
+        - images: 3 RGB channel images with [B, C, H, W]
+        - outputs: number of class channels with [B, class number, H, W]
+        - labels: 1 channel images with [B, 1, H, W]
+    """
+
     def __init__(
         self,
         images,

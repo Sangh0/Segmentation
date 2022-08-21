@@ -20,6 +20,14 @@ def evaluate(
     device, 
     metric,
 ):
+
+    """
+    Args:
+        - model: trained model or weighted model
+        - dataset: train or valid or test
+        - device: cuda or cpu
+        - metric: a metric to check performance of model about dataset
+    """
     start = time.time()
     model = model.to(device)
     model.eval()

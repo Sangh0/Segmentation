@@ -126,9 +126,9 @@ class TrainModel(object):
                     print('\n##########################\n'
                           '##### Early Stopping #####\n'
                           '##########################')
-                    self.writer.close()
                     break
-        
+                
+        self.writer.close()
         end_training = time.time()
         print(f'\nTotal time for training is {end_training-start_training:.2f}s')
 

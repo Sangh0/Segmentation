@@ -1,5 +1,5 @@
 # PIDNET Implementation 
-### PIDNET link : https://arxiv.org/abs/2206.02066  
+### Paper Link : https://arxiv.org/abs/2206.02066  
 ### [Paper Review](https://github.com/Sangh0/Segmentation/blob/main/PIDNet/pidnet_paper_review.ipynb)  
 ### Code Implementation Reference: [Official Github](https://github.com/XuJiacong/PIDNet)
 ### PIDNet Architecture  
@@ -19,17 +19,22 @@
 
 ## Train
 ```
-usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]
-               [--batch_size BATCH_SIZE] [--weight_decay WEIGHT_DECAY] [--num_classes NUM_CLASSES]
-               [--loss_weights LOSS_WEIGHTS] [--t_threshold T_THRESHOLD] [--lr_scheduling LR_SCHEDULING] 
-               [--check_point CHECK_POINT] [--early_stop EARLY_STOP] [--img_height IMG_HEIGHT] 
+usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS] \
+               [--batch_size BATCH_SIZE] [--weight_decay WEIGHT_DECAY] [--num_classes NUM_CLASSES] \
+               [--loss_weights LOSS_WEIGHTS] [--t_threshold T_THRESHOLD] [--lr_scheduling LR_SCHEDULING] \ 
+               [--check_point CHECK_POINT] [--early_stop EARLY_STOP] [--img_height IMG_HEIGHT] \
                [--img_width IMG_WIDTH]
+
+example: python main.py --data_dir ./dataset/cityscapes --model_name pidnet_s --num_classes 19
 ```
 
 ## Evaluate
 ```
-usage: evaluate.py [-h] [--data_dir DATA_DIR] [--weight WEIGHT] [--dataset DATASET] 
-                        [--model_name MODEL_NAME] [--num_classes NUM_CLASSES]
+usage: evaluate.py [-h] [--data_dir DATA_DIR] [--weight WEIGHT] [--dataset DATASET] \
+                   [--model_name MODEL_NAME] [--num_classes NUM_CLASSES]
+    
+example: evaluate.py --data_dir ./dataset/cityscapes --weight ./weights/best_weight.h5 \
+                     --dataset test --model_name pidnet_s --num_classes 19
 ```
 
 ## Run on Jupyter Notebook for training model

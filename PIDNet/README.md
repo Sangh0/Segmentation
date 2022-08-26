@@ -12,6 +12,11 @@
 - second sample
 <img src = "https://github.com/Sangh0/Segmentation/blob/main/PIDNet/figure/output/test_output2.png?raw=true" width=600>
 
+## dataset download  
+[Cityscapes Dataset](https://www.cityscapes-dataset.com/)
+[CamVid Dataset](http://mi.eng.cam.ac.uk/research/projects/VideoRec/CamVid/) or (https://www.kaggle.com/datasets/carlolepelaars/camvid)
+[ADE20K Dataset](https://groups.csail.mit.edu/vision/datasets/ADE20K/)
+
 ## Train
 ```
 usage: main.py [-h] [--data_dir DATA_DIR] [--model_name MODEL_NAME] [--lr LR] [--epochs EPOCHS]

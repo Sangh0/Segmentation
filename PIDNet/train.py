@@ -17,18 +17,18 @@ from combination import Combination
 class TrainModel(object):
     """
     Args:
-        - model: Model for training
-        - lr: learning rate
-        - epochs: max epochs
-        - weight_decay: l2 penalty
-        - num_classes: total number of class in dataset
-        - t_threshold: threshold value for l3 function
-        - loss_weights: weight values for entire loss function
-                        From the left of the list, its lambda0, labmda1, labmda2 and lambda3
-        - lr_scheduling: apply learning rate scheduler
-        - check_point: save the weight with best score during training
-        - early_stop: apply early stopping to avoid over-fitting
-        - ignore_index: ignore index of dataset
+        model: Model for training
+        lr: learning rate
+        epochs: max epochs
+        weight_decay: l2 penalty
+        num_classes: total number of class in dataset
+        t_threshold: threshold value for l3 function
+        loss_weights: weight values for entire loss function
+                      From the left of the list, its lambda0, labmda1, labmda2 and lambda3
+        lr_scheduling: apply learning rate scheduler
+        check_point: save the weight with best score during training
+        early_stop: apply early stopping to avoid over-fitting
+        ignore_index: ignore index of dataset
     """
     def __init__(
         self,

@@ -6,17 +6,16 @@ import torch.nn.functional as F
 
 
 class OhemCELoss(nn.Module):
-    """
-    Calculate the parts of l0, l2 and l3 in entire loss function, 
-    where l0 and l2 correspond to the outputs of P Branch and I Branch, respectively.
+    """Calculate the parts of l0, l2 and l3 in entire loss function, 
+       where l0 and l2 correspond to the outputs of P Branch and I Branch, respectively.
         
-        # param
-            - ignore_index: ignore label in dataset
-            - thresh: threshold value for performing OHEM in backpropagation
-            - min_kept: minimum value to perform threshold in ohem function
-            - weight: weight of CELoss
-            - balance_weights: list of lambda0 and lambda2 of loss function in paper (lambda0=0.4, lambda1=1)
-            - sb_weights: weight value to avoid 1 input from entering
+    Args:
+        ignore_index (int): ignore label in dataset
+        thresh (float): threshold value for performing OHEM in backpropagation
+        min_kept: minimum value to perform threshold in ohem function
+        weight (float): weight of CELoss
+        balance_weights (List[float]): list of lambda0 and lambda2 of loss function in paper (lambda0=0.4, lambda1=1)
+        sb_weights (float): weight value to avoid 1 input from entering
     """
     def __init__(
         self, 
@@ -85,8 +84,8 @@ class BoundaryLoss(nn.Module):
     Calculate the part of l1 in entire loss function.
     This function is performed for boundary detection.
         
-        # param
-            - coeff_bce: lambda 1 in form (2) from pidnet paper
+    Args:
+        coeff_bce: lambda 1 in form (2) from pidnet paper
     """
     def __init__(self, coeff_bce=20):
         super(BoundaryLoss, self).__init__()

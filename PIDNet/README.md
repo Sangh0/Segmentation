@@ -33,7 +33,7 @@ example: python main.py --data_dir ./dataset/cityscapes --model_name pidnet_s --
 usage: evaluate.py [-h] [--data_dir DATA_DIR] [--weight WEIGHT] [--dataset DATASET] \
                    [--model_name MODEL_NAME] [--num_classes NUM_CLASSES]
     
-example: python evaluate.py --data_dir ./dataset/cityscapes --weight ./weights/best_weight.h5 \
+example: python evaluate.py --data_dir ./dataset/cityscapes --weight ./weights/best_weight.pt \
                             --dataset test --model_name pidnet_s --num_classes 19
 ```
 

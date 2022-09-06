@@ -90,7 +90,7 @@ def evaluate(
 
 
 def get_args_parser():
-    parser = argparse.ArgumentParser(description='Training PIDNet', add_help=False)
+    parser = argparse.ArgumentParser(description='Testing PIDNet', add_help=False)
     parser.add_argument('--data_dir', type=str, required=True,
                         help='directory where your dataset is located')
     parser.add_argument('--weight', type=str, required=True,

@@ -169,7 +169,7 @@ evaluate(
 
 ## Visualize outputs on Jupyter Notebook
 ```python
-from evaluate import VisualizeOnNotebook
+from visualize import VisualizeOnNotebook
 
 # if using train or valid set
 visual = VisualizeCityscapesOnNotebook(

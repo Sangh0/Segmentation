@@ -1,4 +1,15 @@
 # Implement and Review paper related to Image Segmentation
+
+### Implementation or Review Paper List
+- [x] [FCN (CVPR 2015)](https://github.com/Sangh0/Segmentation/tree/main/FCN)
+- [x] [U-Net (MICCAI 2015)](https://github.com/Sangh0/Segmentation/tree/main/U-Net)
+- [x] [SegNet (IEEE 2016)](https://github.com/Sangh0/Segmentation/tree/main/SegNet)
+- [x] [BiSeNet (ECCV 2018)](https://github.com/Sangh0/Segmentation/tree/main/BiSeNet)
+- [x] [BiSeNetV2 (2020)](https://github.com/Sangh0/Segmentation/tree/main/BiSeNetV2)
+- [ ] [RegSeg (2021)](https://github.com/Sangh0/Segmentation/tree/main/RegSeg)
+- [ ] [PP-LiteSeg (2022)](https://github.com/Sangh0/Segmentation/tree/main/PP-LiteSeg)
+- [x] [PIDNet (2022)](https://github.com/Sangh0/Segmentation/tree/main/PIDNet)   
+
 ## What is Segmentation?  
 <img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">  
 

@@ -1,14 +1,14 @@
 # Implement and Review paper related to Image Segmentation
 
 ### Implementation or Review Paper List
-- [x] [FCN (CVPR 2015)](https://github.com/Sangh0/Segmentation/tree/main/FCN)
-- [x] [U-Net (MICCAI 2015)](https://github.com/Sangh0/Segmentation/tree/main/U-Net)
-- [x] [SegNet (IEEE 2016)](https://github.com/Sangh0/Segmentation/tree/main/SegNet)
-- [x] [BiSeNet (ECCV 2018)](https://github.com/Sangh0/Segmentation/tree/main/BiSeNet)
-- [x] [BiSeNetV2 (2020)](https://github.com/Sangh0/Segmentation/tree/main/BiSeNetV2)
-- [ ] [RegSeg (2021)](https://github.com/Sangh0/Segmentation/tree/main/RegSeg)
-- [ ] [PP-LiteSeg (2022)](https://github.com/Sangh0/Segmentation/tree/main/PP-LiteSeg)
-- [x] [PIDNet (2022)](https://github.com/Sangh0/Segmentation/tree/main/PIDNet)   
+- [x] FCN (CVPR 2015) [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/FCN/fcn_paper.ipynb) [(code)](https://github.com/Sangh0/Segmentation/tree/main/FCN)
+- [x] U-Net (MICCAI 2015) [(paper review)](hhttps://github.com/Sangh0/Segmentation/blob/main/U-Net/Unet_paper.ipynb) [(code)](https://github.com/Sangh0/Segmentation/tree/main/U-Net)
+- [x] [SegNet (IEEE 2016)] [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/SegNet/SegNet_paper.ipynb) [(code)](https://github.com/Sangh0/Segmentation/tree/main/SegNet)
+- [x] BiSeNet (ECCV 2018) [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/BiSeNet/BiSeNet_paper.ipynb) [(code)](https://github.com/Sangh0/Segmentation/tree/main/BiSeNet)
+- [x] BiSeNetV2 (2020) [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/BiSeNetV2/BiSeNetV2_paper_review.ipynb) [(code)] (https://github.com/Sangh0/Segmentation/tree/main/BiSeNetV2)
+- [ ] RegSeg (2021)  
+- [ ] PP-LiteSeg (2022) [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/PP-LiteSeg/PP-LiteSeg_paper.ipynb)  
+- [x] PIDNet (2022) [(paper review)](https://github.com/Sangh0/Segmentation/blob/main/PIDNet/pidnet_paper_review.ipynb) [(code)](https://github.com/Sangh0/Segmentation/tree/main/PIDNet)   
 
 ## What is Segmentation?  
 <img src = "https://www.jeremyjordan.me/content/images/2018/05/Screen-Shot-2018-05-17-at-7.42.16-PM.png">  
